@@ -45,6 +45,13 @@
         }
     </style>
     @stack('styles')
+    
+    <!-- Global Route Guard -->
+    <script>
+        if (!localStorage.getItem('token')) {
+            window.location.href = "{{ route('login') }}";
+        }
+    </script>
 </head>
 <body class="antialiased overflow-hidden">
     <div class="flex h-screen w-full">
