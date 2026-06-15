@@ -1,4 +1,4 @@
-@extends('user.layout')
+@extends('user.user_layout')
 
 @section('title', 'BusFlow - User')
 @section('page_title', 'BusFlow User')

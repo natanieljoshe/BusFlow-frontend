@@ -690,6 +690,23 @@
     </div>
 
     <script>
+        (function () {
+            const canvas = document.getElementById('bg-canvas');
+            if (!canvas) return;
+
+            function applyBgEffect(enabled) {
+                const shouldShow = enabled !== false && localStorage.getItem('bf_bg') !== 'off';
+                canvas.style.display = shouldShow ? '' : 'none';
+            }
+
+            applyBgEffect(localStorage.getItem('bf_bg') !== 'off');
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'bf_bg') {
+                    applyBgEffect(event.newValue !== 'off');
+                }
+            });
+        })();
+
         /* ── Rating buttons ── */
         document.querySelectorAll('[data-rating-button]').forEach((btn) => {
             btn.addEventListener('click', () => {

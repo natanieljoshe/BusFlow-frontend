@@ -1,8 +1,8 @@
-@extends('user.layout')
+@extends('sopir.sopir_layout')
 
 @section('title', 'Settings - BusFlow')
 @section('page_title', 'Settings')
-@section('page_description', 'Atur preferensi audio, efek background, dan bahasa tampilan BusFlow.')
+@section('page_description', 'Configure audio preferences, background effects, and display settings for the driver panel.')
 
 @section('content')
 <style>
@@ -28,7 +28,6 @@
     .setting-info strong { font-size: 14px; }
     .setting-info span { font-size: 12px; color: var(--muted); }
 
-    /* Toggle switch */
     .toggle {
         position: relative;
         width: 48px;
@@ -64,7 +63,6 @@
         background: var(--violet-bright);
     }
 
-    /* Lang toggle */
     .lang-toggle {
         display: flex;
         border: 1px solid rgba(168,85,247,.3);
@@ -90,7 +88,6 @@
         box-shadow: 0 0 10px rgba(168,85,247,.3);
     }
 
-    /* Audio player */
     .audio-player {
         display: grid;
         gap: 12px;
@@ -207,13 +204,11 @@
 </style>
 
 <div class="settings-grid">
-
-    {{-- ── Audio Player ── --}}
     <div class="audio-player">
         <div class="audio-player-header">
             <div class="setting-info">
                 <strong data-i18n="audio_title">Background Music</strong>
-                <span data-i18n="audio_desc">Putar musik latar saat menggunakan BusFlow</span>
+                <span data-i18n="audio_desc">Play background music while using BusFlow</span>
             </div>
             <label class="toggle">
                 <input type="checkbox" id="audio-toggle">
@@ -246,7 +241,7 @@
         </ul>
 
         <div class="now-playing" id="now-playing">
-            <span data-i18n="no_track">Tidak ada lagu yang diputar</span>
+            <span data-i18n="no_track">No track playing</span>
         </div>
 
         <div class="audio-controls">
@@ -269,11 +264,10 @@
         <audio id="bg-audio" loop></audio>
     </div>
 
-    {{-- ── Background Effect ── --}}
     <div class="setting-row">
         <div class="setting-info">
             <strong data-i18n="bg_title">Background Effect</strong>
-            <span data-i18n="bg_desc">Animasi partikel dan gelombang warna di latar halaman</span>
+            <span data-i18n="bg_desc">Particle animation and color wave background effect</span>
         </div>
         <label class="toggle">
             <input type="checkbox" id="bg-toggle" checked>
@@ -281,33 +275,20 @@
         </label>
     </div>
 
-    {{-- ── Language ── --}}
-    <div class="setting-row">
-        <div class="setting-info">
-            <strong data-i18n="lang_title">Language / Bahasa</strong>
-            <span data-i18n="lang_desc">Ubah bahasa tampilan antarmuka</span>
-        </div>
-        <div class="lang-toggle">
-            <button class="lang-btn active" id="lang-id">ID</button>
-            <button class="lang-btn" id="lang-en">EN</button>
-        </div>
-    </div>
-
 </div>
 
 <script>
 (function () {
-    /* ── i18n strings ── */
     const LANG = {
         id: {
             audio_title: 'Background Music',
-            audio_desc:  'Putar musik latar saat menggunakan BusFlow',
+            audio_desc:  'Play background music while using BusFlow',
             bg_title:    'Background Effect',
-            bg_desc:     'Animasi partikel dan gelombang warna di latar halaman',
+            bg_desc:     'Particle animation and color wave background effect',
             lang_title:  'Language / Bahasa',
-            lang_desc:   'Ubah bahasa tampilan antarmuka',
-            no_track:    'Tidak ada lagu yang diputar',
-            now_playing: 'Sedang memutar',
+            lang_desc:   'Change the interface display language',
+            no_track:    'No track playing',
+            now_playing: 'Now playing',
         },
         en: {
             audio_title: 'Background Music',
@@ -327,16 +308,14 @@
         { name: 'Transit Pulse',  genre: 'Chillhop' },
     ];
 
-    /* ── State (persisted in localStorage) ── */
     const state = {
-        lang:      localStorage.getItem('bf_lang')    || 'id',
+        lang:      localStorage.getItem('bf_lang')    || 'en',
         bgEffect:  localStorage.getItem('bf_bg')      !== 'off',
         audioOn:   localStorage.getItem('bf_audio')   === 'on',
         trackIdx:  parseInt(localStorage.getItem('bf_track') || '0'),
         volume:    parseInt(localStorage.getItem('bf_vol')   || '70'),
     };
 
-    /* ── Elements ── */
     const audio      = document.getElementById('bg-audio');
     const btnPlay    = document.getElementById('btn-play');
     const iconPlay   = document.getElementById('icon-play');
@@ -348,11 +327,8 @@
     const audioToggle= document.getElementById('audio-toggle');
     const bgToggle   = document.getElementById('bg-toggle');
     const trackItems = document.querySelectorAll('.track-item');
-    const langIdBtn  = document.getElementById('lang-id');
-    const langEnBtn  = document.getElementById('lang-en');
     const bgCanvas   = document.getElementById('bg-canvas');
 
-    /* ── Language ── */
     function applyLang(lang) {
         state.lang = lang;
         localStorage.setItem('bf_lang', lang);
@@ -360,15 +336,9 @@
             const key = el.dataset.i18n;
             if (LANG[lang][key]) el.textContent = LANG[lang][key];
         });
-        langIdBtn.classList.toggle('active', lang === 'id');
-        langEnBtn.classList.toggle('active', lang === 'en');
         if (!audio.paused) updateNowPlaying();
     }
 
-    langIdBtn.addEventListener('click', () => applyLang('id'));
-    langEnBtn.addEventListener('click', () => applyLang('en'));
-
-    /* ── Background effect ── */
     function applyBg(on) {
         state.bgEffect = on;
         localStorage.setItem('bf_bg', on ? 'on' : 'off');
@@ -377,8 +347,20 @@
     }
 
     bgToggle.addEventListener('change', () => applyBg(bgToggle.checked));
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'bf_bg') {
+            const enabled = event.newValue !== 'off';
+            state.bgEffect = enabled;
+            bgToggle.checked = enabled;
+            if (bgCanvas) bgCanvas.style.display = enabled ? '' : 'none';
+        }
 
-    /* ── Audio ── */
+        if (event.key === 'bf_lang') {
+            const lang = event.newValue || 'en';
+            applyLang(lang);
+        }
+    });
+
     function updateNowPlaying() {
         const t = TRACKS[state.trackIdx];
         const label = LANG[state.lang].now_playing;
@@ -391,7 +373,6 @@
         state.trackIdx = idx;
         localStorage.setItem('bf_track', idx);
         trackItems.forEach((el, i) => el.classList.toggle('is-playing', i === idx));
-        /* No real src — placeholder. Replace with actual audio URLs */
         audio.src = '';
         updateNowPlaying();
     }
@@ -429,11 +410,9 @@
     });
 
     btnPlay.addEventListener('click', togglePlayPause);
-
     btnPrev.addEventListener('click', () => {
         selectTrack((state.trackIdx - 1 + TRACKS.length) % TRACKS.length);
     });
-
     btnNext.addEventListener('click', () => {
         selectTrack((state.trackIdx + 1) % TRACKS.length);
     });
@@ -457,7 +436,6 @@
         localStorage.setItem('bf_vol', state.volume);
     });
 
-    /* ── Init ── */
     applyLang(state.lang);
     applyBg(state.bgEffect);
     audioToggle.checked = state.audioOn;

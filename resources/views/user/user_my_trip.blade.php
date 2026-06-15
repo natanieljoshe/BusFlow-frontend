@@ -1,8 +1,8 @@
-@extends('user.layout')
+@extends('user.user_layout')
 
 @section('title', 'Active Trip & Driver Rating - BusFlow')
 @section('page_title', 'Active Trip & Driver')
-@section('page_description', 'Lihat perjalanan aktif, profil armada, nama sopir, nomor lambung bus, dan kirim rating performa sopir.')
+@section('page_description', 'View active trips, fleet profiles, driver names, bus fleet numbers, and submit driver performance ratings.')
 
 
 @section('content')
@@ -17,15 +17,15 @@
     <section class="surface">
         <div class="surface-header">
             <div>
-                <h2>Perjalanan Aktif</h2>
-                <p>Data armada dan sopir akan mengikuti tiket/perjalanan aktif user dari database.</p>
+                <h2>Active Trip</h2>
+                <p>Fleet and driver data will follow the user's active ticket/trip from the database.</p>
             </div>
             <span class="pill">{{ data_get($currentTrip, 'route_code', 'No active route') }}</span>
         </div>
         <div class="surface-body stack">
             @if ($currentTrip)
                 <div class="active-route">
-                    <div class="bus-asset" data-bus-code="{{ $busCode }}" aria-label="Armada {{ $busCode }}"></div>
+                    <div class="bus-asset" data-bus-code="{{ $busCode }}" aria-label="Fleet {{ $busCode }}"></div>
                     <div>
                         <div class="driver-info">
                             <div class="stat-box">
@@ -70,8 +70,8 @@
                 </div>
             @else
                 <div class="empty-state">
-                    <strong>Belum ada perjalanan aktif.</strong>
-                    <span>Ketika user melakukan tap-in, controller bisa mengirim data perjalanan aktif ke variabel <code>$currentTrip</code>.</span>
+                    <strong>No active trips yet.</strong>
+                    <span>When the user taps in, the controller can send active trip data to the <code>$currentTrip</code> variable.</span>
                 </div>
             @endif
 
@@ -80,14 +80,14 @@
                 <input type="hidden" name="trip_id" value="{{ data_get($currentTrip, 'id') }}">
                 <input type="hidden" name="rating" value="{{ $ratingValue }}" data-rating-value>
                 <div>
-                    <span class="mini-label">Rating & Ulasan Sopir</span>
-                    <div class="stars" role="radiogroup" aria-label="Rating sopir" style="margin-top: 8px;">
+                    <span class="mini-label">Driver Rating & Review</span>
+                    <div class="stars" role="radiogroup" aria-label="Driver rating" style="margin-top: 8px;">
                         @for ($star = 1; $star <= 5; $star++)
                             <button
                                 class="star-btn {{ $star <= (int) $ratingValue ? 'is-selected' : '' }}"
                                 type="button"
                                 data-rating-button="{{ $star }}"
-                                aria-label="Beri rating {{ $star }}"
+                                aria-label="Give rating {{ $star }}"
                                 aria-pressed="{{ $star <= (int) $ratingValue ? 'true' : 'false' }}"
                             ><svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M9 1.5l2.06 4.18 4.61.67-3.34 3.25.79 4.59L9 11.77l-4.12 2.42.79-4.59L2.33 6.35l4.61-.67L9 1.5z"/></svg></button>
                         @endfor
@@ -95,7 +95,7 @@
                 </div>
                 <div class="field">
                     <label for="feedback">Feedback</label>
-                    <textarea class="textarea-control" id="feedback" name="feedback" placeholder="Tulis ulasan untuk performa sopir dan armada">{{ old('feedback') }}</textarea>
+                    <textarea class="textarea-control" id="feedback" name="feedback" placeholder="Write a review for the driver and fleet performance">{{ old('feedback') }}</textarea>
                 </div>
                 <div class="button-row">
                     <button class="ghost-btn" type="reset">Skip</button>

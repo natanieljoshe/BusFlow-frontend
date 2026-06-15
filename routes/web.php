@@ -10,12 +10,17 @@ Route::get('/', function () {
 Route::redirect('/user', '/user/routes')->name('user.home');
 
 Route::prefix('user')->name('user.')->group(function () {
-    Route::view('/routes', 'user.routes')->name('routes');
-    Route::view('/payments', 'user.payments')->name('payments');
-    Route::view('/my-trip', 'user.my-trip')->name('my-trip');
-    Route::view('/favourites', 'user.favourites')->name('favourites');
+    Route::view('/routes', 'user.user_routes')->name('routes');
+    Route::view('/payments', 'user.user_payments')->name('payments');
+    Route::view('/my-trip', 'user.user_my_trip')->name('my-trip');
+    Route::view('/favourites', 'user.user_favourites')->name('favourites');
     Route::redirect('/favorites', '/user/favourites')->name('favorites');
-    
-    // Rute settings ditambahkan di sini
-    Route::view('/settings', 'settings')->name('settings');
+    Route::view('/settings', 'user.user_settings')->name('settings');
+});
+
+Route::prefix('sopir')->name('sopir.')->group(function () {
+    Route::view('/home', 'sopir.sopir_home')->name('home');
+    Route::view('/trip-details', 'sopir.sopir_trip_details')->name('trip-details');
+    Route::view('/history', 'sopir.sopir_history')->name('history');
+    Route::view('/settings', 'sopir.sopir_settings')->name('settings');
 });

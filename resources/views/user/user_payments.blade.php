@@ -1,8 +1,8 @@
-@extends('user.layout')
+@extends('user.user_layout')
 
 @section('title', 'Payments & Digital Wallet - BusFlow')
 @section('page_title', 'Payments & QR')
-@section('page_description', 'Kelola saldo e-wallet, top up, riwayat pembayaran, dan QR boarding untuk tap-in serta tap-out.')
+@section('page_description', 'Manage e-wallet balance, top up, payment history, and QR boarding for tap-in and tap-out.')
 
 @section('content')
     @php
@@ -167,7 +167,7 @@
         <div class="surface-header">
             <div>
                 <h2>Digital Wallet</h2>
-                <p>Saldo, top up, dan riwayat pembayaran akan diambil dari database user.</p>
+                <p>Balance, top-up, and payment history will be retrieved from the user database.</p>
             </div>
             <span class="pill">{{ data_get($wallet, 'status', 'Waiting data') }}</span>
         </div>
@@ -178,7 +178,7 @@
                         <div class="balance-row">
                             <div>
                                 <span class="mini-label">Available Balance</span>
-                                <strong>{{ is_numeric($balance) ? 'Rp ' . number_format($balance, 0, ',', '.') : 'Belum tersedia' }}</strong>
+                                <strong>{{ is_numeric($balance) ? 'Rp ' . number_format($balance, 0, ',', '.') : 'Unavailable' }}</strong>
                                 <span class="status-dot">{{ data_get($wallet, 'is_active') ? 'Ready to ride' : 'Need wallet data' }}</span>
                             </div>
                             <div class="button-row">
@@ -202,7 +202,7 @@
                                 <li class="item-card">
                                     <div class="card-row">
                                         <div>
-                                            <strong>{{ data_get($activity, 'title', data_get($activity, 'description', 'Aktivitas wallet')) }}</strong>
+                                            <strong>{{ data_get($activity, 'title', data_get($activity, 'description', 'Wallet activity')) }}</strong>
                                             <div class="meta">{{ data_get($activity, 'meta', data_get($activity, 'created_at', '-')) }}</div>
                                         </div>
                                         <span class="amount {{ $isCredit ? 'is-credit' : 'is-debit' }}">
@@ -212,8 +212,8 @@
                                 </li>
                             @empty
                                 <li class="empty-state">
-                                    <strong>Belum ada riwayat pembayaran.</strong>
-                                    <span>Riwayat akan tampil dari tabel transaksi wallet ketika database sudah disambungkan.</span>
+                                    <strong>No payment history yet.</strong>
+                                    <span>History will appear from the wallet transaction table once the database is connected.</span>
                                 </li>
                             @endforelse
                         </ul>
@@ -245,7 +245,7 @@
                             @if (!empty($qrCodeSvg))
                                 {!! $qrCodeSvg !!}
                             @elseif (!empty($qrCodeUrl))
-                                <img src="{{ $qrCodeUrl }}" alt="QR boarding BusFlow">
+                                <img src="{{ $qrCodeUrl }}" alt="BusFlow QR boarding">
                             @else
                                 <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="background:transparent">
                                     <rect width="100" height="100" fill="transparent"/>
@@ -286,7 +286,7 @@
                         <canvas id="qr-canvas" style="display:none;"></canvas>
                     </div>
 
-                    <div id="qr-status">Arahkan kamera ke QR code</div>
+                    <div id="qr-status">Point camera at QR code</div>
 
                     <button class="cam-btn" id="cam-toggle" type="button">
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -294,7 +294,7 @@
                             <circle cx="7" cy="7.75" r="2.2" stroke="currentColor" stroke-width="1.3"/>
                             <path d="M4.5 3.5V3a1.5 1.5 0 013 0v.5" stroke="currentColor" stroke-width="1.2"/>
                         </svg>
-                        <span id="cam-label">Buka Kamera</span>
+                        <span id="cam-label">Open Camera</span>
                     </button>
 
 
@@ -337,7 +337,7 @@
 
             async function startCamera() {
                 try {
-                    setStatus('Meminta akses kamera…');
+                    setStatus('Requesting camera access…');
                     stream = await navigator.mediaDevices.getUserMedia({
                         video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 640 } }
                     });
@@ -347,11 +347,11 @@
                     video.style.display    = 'block';
                     staticEl.style.display = 'none';
                     toggleBtn.classList.add('is-active');
-                    label.textContent = 'Tutup Kamera';
-                    setStatus('Kamera aktif — arahkan ke QR');
+                    label.textContent = 'Close Camera';
+                    setStatus('Camera active — point at QR');
                     lastCode = null;
                     scanFrame();
-                } catch (err) { setStatus('Tidak dapat mengakses kamera: ' + err.message, 'err'); }
+                } catch (err) { setStatus('Unable to access camera: ' + err.message, 'err'); }
             }
 
             function stopCamera() {
@@ -362,8 +362,8 @@
                 video.style.display    = 'none';
                 staticEl.style.display = 'grid';
                 toggleBtn.classList.remove('is-active');
-                label.textContent = 'Buka Kamera';
-                setStatus('Arahkan kamera ke QR code');
+                label.textContent = 'Open Camera';
+                setStatus('Point camera at QR code');
                 lastCode = null;
             }
 

@@ -121,7 +121,7 @@ class UserDashboardController extends Controller
 
         $tracking = $this->latestTracking();
 
-        return view('user.routes', [
+        return view('user.user_routes', [
             'recommendedRoutes' => $recommendedRoutes,
             'scheduleRows' => $scheduleRows,
             'tracking' => $tracking,
@@ -174,7 +174,7 @@ class UserDashboardController extends Controller
             });
         }
 
-        return view('user.payments', [
+        return view('user.user_payments', [
             'wallet' => $wallet,
             'walletActivities' => $walletActivities,
             'qrCode' => $booking?->qr_code,
@@ -192,7 +192,7 @@ class UserDashboardController extends Controller
         $userId = $this->currentUserId($request);
         $currentTrip = $userId ? $this->activeTrip($userId) : null;
 
-        return view('user.my-trip', [
+        return view('user.user_my_trip', [
             'currentTrip' => $currentTrip,
             'ratingAction' => route('user.my-trip.rating'),
             'databaseMessage' => $this->userDataMessage($userId),
@@ -268,7 +268,7 @@ class UserDashboardController extends Controller
             });
         }
 
-        return view('user.favourites', [
+        return view('user.user_favourites', [
             'tripHistory' => $tripHistory,
             'favorites' => $favorites,
             'historyExportUrl' => '#',
