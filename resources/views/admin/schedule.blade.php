@@ -33,7 +33,7 @@
                     <input type="range" min="100" max="1000" value="500" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-medium text-slate-400 mb-1.5">Mutation Rate</label>
                         <div class="relative">

@@ -1,4 +1,7 @@
-<aside class="w-64 bg-[#0f172a] border-r border-slate-800 flex flex-col justify-between hidden md:flex z-20">
+<!-- Mobile overlay -->
+<div id="mobile-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-20 hidden md:hidden transition-opacity opacity-0"></div>
+
+<aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-64 bg-[#0f172a] border-r border-slate-800 flex-col justify-between z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex">
     <div>
         <div class="h-16 flex items-center px-6 border-b border-slate-800">
             <!-- Logo -->
@@ -44,9 +47,40 @@
             <i class="fa-solid fa-triangle-exclamation"></i>
             Emergency Override
         </button>
-        <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors text-sm font-medium">
+        <a href="#" onclick="handleLogout(event)" class="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors text-sm font-medium">
             <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
             Exit System
         </a>
     </div>
 </aside>
+
+<script>
+async function handleLogout(e) {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    
+    // Optional: Ganti tulisan jadi logging out untuk UX
+    const btn = e.currentTarget;
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin w-5 text-center"></i> Exiting...';
+    btn.style.pointerEvents = 'none';
+
+    if (token) {
+        try {
+            await fetch(`${window.API_URL}/api/logout`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
+            });
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    }
+    
+    // Hapus token dan arahkan ke login page
+    localStorage.removeItem('token');
+    window.location.href = "{{ route('login') }}";
+}
+</script>

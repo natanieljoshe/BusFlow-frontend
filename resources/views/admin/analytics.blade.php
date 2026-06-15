@@ -8,7 +8,7 @@
 <div class="flex flex-col gap-6">
 
     <!-- Key Metrics Row -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <!-- Metric 1 -->
         <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-5 shadow-lg">
             <h4 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">Total Passengers (Today)</h4>
@@ -51,27 +51,27 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         <!-- Main Passenger Prediction Chart -->
-        <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-6 shadow-lg">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-semibold text-slate-200">24H Passenger Volume Prediction</h3>
+        <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-4 sm:p-6 shadow-lg">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-6">
+                <h3 class="text-base sm:text-lg font-semibold text-slate-200">24H Passenger Volume Prediction</h3>
                 <select class="bg-slate-800/50 border border-slate-700 text-slate-300 text-xs rounded focus:ring-indigo-500 focus:border-indigo-500 block p-1.5 outline-none">
                     <option>Today</option>
                     <option>Tomorrow</option>
                     <option>Next 7 Days</option>
                 </select>
             </div>
-            <div class="h-72 w-full relative">
+            <div class="h-64 sm:h-72 w-full relative">
                 <canvas id="predictionChart"></canvas>
             </div>
         </div>
 
         <!-- Fleet Utilization Chart -->
-        <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-6 shadow-lg">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-semibold text-slate-200">Corridor Load Factor</h3>
+        <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-4 sm:p-6 shadow-lg">
+            <div class="flex justify-between items-start sm:items-center gap-3 sm:gap-0 mb-6">
+                <h3 class="text-base sm:text-lg font-semibold text-slate-200">Corridor Load Factor</h3>
                 <button class="text-slate-400 hover:text-white transition-colors"><i class="fa-solid fa-ellipsis-vertical"></i></button>
             </div>
-            <div class="h-72 w-full relative">
+            <div class="h-64 sm:h-72 w-full relative">
                 <canvas id="loadFactorChart"></canvas>
             </div>
         </div>

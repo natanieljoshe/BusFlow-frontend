@@ -8,16 +8,16 @@
 <div class="flex flex-col gap-6">
 
     <!-- 3. Hero banner -->
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 p-8 border border-indigo-500/20 shadow-lg">
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 p-5 sm:p-8 border border-indigo-500/20 shadow-lg">
         <!-- Abstract Background Effects -->
         <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
         <div class="absolute -top-24 -right-24 w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
         <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style="animation-delay: 2s;"></div>
         
-        <div class="relative z-10 flex items-center justify-between">
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-0">
             <div>
-                <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">Global Intelligence Hub</h2>
-                <p class="text-indigo-200/80 max-w-xl text-sm leading-relaxed">Real-time status monitoring and maintenance scheduling. The genetic algorithm scheduler is actively optimizing fleet operations.</p>
+                <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2 tracking-tight">Global Intelligence Hub</h2>
+                <p class="text-indigo-200/80 max-w-xl text-xs sm:text-sm leading-relaxed">Real-time status monitoring and maintenance scheduling. The genetic algorithm scheduler is actively optimizing fleet operations.</p>
             </div>
             <div class="hidden lg:block text-right bg-slate-900/40 p-4 rounded-xl border border-indigo-500/20 backdrop-blur-sm">
                 <div class="text-xs font-semibold text-indigo-300 uppercase tracking-wider mb-1"><i class="fa-regular fa-clock"></i> System Time</div>
@@ -155,14 +155,14 @@
     <!-- 7. Alert Maintenance -->
     <div>
         <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl overflow-hidden shadow-lg">
-            <div class="px-6 py-5 border-b border-slate-800 flex items-center justify-between bg-slate-800/20">
+            <div class="px-4 sm:px-6 py-4 sm:py-5 border-b border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between bg-slate-800/20 gap-3 sm:gap-0">
                 <div>
-                    <h3 class="text-lg font-semibold text-slate-200 flex items-center gap-2">
+                    <h3 class="text-base sm:text-lg font-semibold text-slate-200 flex items-center gap-2">
                         <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Alert Maintenance
                     </h3>
-                    <p class="text-xs text-slate-400 mt-1">Bus yang mendekati atau melewati jadwal servis berkala</p>
+                    <p class="text-[10px] sm:text-xs text-slate-400 mt-1">Bus yang mendekati atau melewati jadwal servis berkala</p>
                 </div>
-                <button class="text-xs font-medium px-3 py-1.5 rounded bg-slate-800 text-indigo-400 hover:bg-slate-700 hover:text-indigo-300 transition-colors border border-slate-700">Lihat Semua</button>
+                <button class="text-[10px] sm:text-xs font-medium px-3 py-1.5 rounded bg-slate-800 text-indigo-400 hover:bg-slate-700 hover:text-indigo-300 transition-colors border border-slate-700">Lihat Semua</button>
             </div>
             
             <div class="overflow-x-auto">

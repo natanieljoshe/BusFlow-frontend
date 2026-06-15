@@ -65,6 +65,30 @@
 
     <script>
         window.API_URL = "{{ env('API_URL') }}";
+
+        // Mobile sidebar toggle logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+
+            if (menuBtn && sidebar && overlay) {
+                const toggleSidebar = () => {
+                    sidebar.classList.toggle('-translate-x-full');
+                    
+                    if (overlay.classList.contains('hidden')) {
+                        overlay.classList.remove('hidden');
+                        setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                    } else {
+                        overlay.classList.add('opacity-0');
+                        setTimeout(() => overlay.classList.add('hidden'), 300); // Wait for transition
+                    }
+                };
+
+                menuBtn.addEventListener('click', toggleSidebar);
+                overlay.addEventListener('click', toggleSidebar);
+            }
+        });
     </script>
     @stack('scripts')
 </body>

@@ -15,7 +15,7 @@
             </div>
             <input type="text" class="bg-slate-800/50 border border-slate-700 text-slate-200 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5 placeholder-slate-500" placeholder="Search ID, Name, or Role...">
         </div>
-        <div class="flex items-center gap-3 w-full md:w-auto">
+        <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 w-full md:w-auto">
             <select class="bg-slate-800/50 border border-slate-700 text-slate-300 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 w-full md:w-auto outline-none">
                 <option value="all">All Roles</option>
                 <option value="driver">Drivers</option>

@@ -6,8 +6,19 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Admin Routes (Tahap 1)
+// Auth Routes
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
+Route::get('/register', function () {
+    return view('auth.register');
+})->name('register');
+
+// Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
+
+    // Dashboard & Pages
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');

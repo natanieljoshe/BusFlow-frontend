@@ -32,15 +32,15 @@
         </div>
 
         <div class="md:col-span-2 bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-6 relative overflow-hidden">
-             <div class="flex items-center justify-between mb-4">
+             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3 sm:gap-0">
                 <h3 class="text-slate-400 text-sm font-medium tracking-wide uppercase">Fleet Status Distribution</h3>
-                <div class="flex items-center gap-4 text-xs font-medium">
+                <div class="flex flex-wrap items-center gap-3 text-xs font-medium">
                     <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.8)]"></span> <span class="text-slate-300">Active (142)</span></div>
                     <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_5px_rgba(245,158,11,0.8)]"></span> <span class="text-slate-300">Maintenance (18)</span></div>
                     <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.8)]"></span> <span class="text-slate-300">Alert (2)</span></div>
                 </div>
             </div>
-            <div class="h-32 w-full flex items-end justify-between gap-2 px-2 mt-2">
+            <div class="h-32 w-full flex items-end justify-between gap-1 sm:gap-2 px-1 sm:px-2 mt-2">
                 <!-- Bar chart skeleton -->
                 <div class="w-full bg-slate-800/50 rounded-t-sm h-[80%] relative group hover:bg-slate-700/50 transition-colors"><div class="absolute bottom-full mb-1 w-full text-center text-[10px] text-slate-500 opacity-0 group-hover:opacity-100">Sen</div></div>
                 <div class="w-full bg-emerald-500/20 rounded-t-sm h-[95%] relative group hover:bg-emerald-500/30 transition-colors border-t border-emerald-500/30"><div class="absolute bottom-full mb-1 w-full text-center text-[10px] text-emerald-400 opacity-0 group-hover:opacity-100">Sel</div></div>
