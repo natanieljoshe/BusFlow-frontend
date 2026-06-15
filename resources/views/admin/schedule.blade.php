@@ -62,32 +62,31 @@
             <div class="z-10 w-full max-w-lg">
                 <div class="flex justify-between items-end mb-4">
                     <div>
-                        <h3 class="text-xl font-bold text-white tracking-wide">Optimization In Progress</h3>
-                        <p class="text-xs text-indigo-400 mt-1 uppercase tracking-widest font-mono">Generasi 124 / 500</p>
+                        <h3 class="text-xl font-bold text-slate-300 tracking-wide">System Idle</h3>
+                        <p class="text-xs text-slate-500 mt-1 uppercase tracking-widest font-mono">Menunggu Model Python</p>
                     </div>
                     <div class="text-right">
-                        <span class="text-3xl font-bold text-white font-mono">24%</span>
+                        <span class="text-3xl font-bold text-slate-600 font-mono">0%</span>
                     </div>
                 </div>
                 
                 <div class="w-full bg-slate-800 rounded-full h-3 mb-6 p-0.5 border border-slate-700">
-                    <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full relative overflow-hidden shadow-[0_0_10px_rgba(99,102,241,0.5)]" style="width: 24%">
-                        <div class="absolute inset-0 bg-white/20 w-full h-full animate-[shimmer_1s_infinite] -translate-x-full" style="background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);"></div>
+                    <div class="bg-slate-700 h-2 rounded-full relative overflow-hidden" style="width: 0%">
                     </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-4 text-center border-t border-slate-800/50 pt-4">
+                <div class="grid grid-cols-3 gap-4 text-center border-t border-slate-800/50 pt-4 opacity-50">
                     <div>
                         <p class="text-xs text-slate-500 mb-1">Best Fitness</p>
-                        <p class="text-lg font-bold text-emerald-400">98.4%</p>
+                        <p class="text-lg font-bold text-slate-500">--%</p>
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 mb-1">Time Elapsed</p>
-                        <p class="text-lg font-bold text-slate-300 font-mono">1m 42s</p>
+                        <p class="text-lg font-bold text-slate-500 font-mono">0m 0s</p>
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 mb-1">Stagnation</p>
-                        <p class="text-lg font-bold text-slate-300 font-mono">0 gen</p>
+                        <p class="text-lg font-bold text-slate-500 font-mono">0 gen</p>
                     </div>
                 </div>
             </div>
@@ -194,7 +193,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="text-xs text-slate-400"><i class="fa-regular fa-clock mr-1"></i> ${time}</div>
             </td>
             <td class="px-6 py-4">
-                ${hasConflict && !sched.bus_id ? 
+                ${hasConflict && !trip.bus_id ? 
                 `<span class="inline-flex items-center gap-2 text-red-400 bg-red-500/10 px-2 py-1 rounded border border-red-500/20 text-xs">
                     <i class="fa-solid fa-triangle-exclamation"></i> Unassigned
                 </span>` : 
@@ -203,7 +202,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </span>`}
             </td>
             <td class="px-6 py-4">
-                ${hasConflict && !sched.driver_id ? 
+                ${hasConflict && !trip.driver_id ? 
                 `<span class="text-xs text-slate-500 italic">Menunggu Alokasi</span>` : 
                 `<div class="flex items-center gap-2">
                     <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(driver)}&background=312e81&color=a5b4fc" class="w-6 h-6 rounded-full">

@@ -327,38 +327,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('stat-trips').innerText = trips.length;
 
     // 3. Update Chart: Performa Algoritma GA
-    // Using schedules to form a mock progression curve since there is no generation endpoint
-    if (schedules.length > 0) {
-        let labels = [];
-        let fitnessData = [];
-        let penaltyData = [];
-        
-        // Generate a pseudo-progression based on schedule count
-        for (let i = 1; i <= 10; i++) {
-            labels.push(`Gen ${i * 10}`);
-            // mock learning curve
-            const fitness = 0.5 + (0.45 * Math.log10(i)); 
-            const penalty = Math.max(0, 1.0 - (0.8 * Math.log10(i)));
-            fitnessData.push(fitness.toFixed(2));
-            penaltyData.push(penalty.toFixed(2));
-        }
-
-        dashboardChart.data.labels = labels;
-        dashboardChart.data.datasets[0].data = fitnessData;
-        dashboardChart.data.datasets[1].data = penaltyData;
-        dashboardChart.update();
-    }
+    // Dihapus sementara menunggu API Python
+    dashboardChart.data.labels = [];
+    dashboardChart.data.datasets[0].data = [];
+    dashboardChart.data.datasets[1].data = [];
+    dashboardChart.update();
+    
+    const chartContainer = document.getElementById('gaChart').parentElement;
+    const overlay = document.createElement('div');
+    overlay.className = 'absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-sm z-10 rounded-lg';
+    overlay.innerHTML = '<i class="fa-solid fa-hourglass-half text-3xl text-indigo-400 mb-3 animate-pulse"></i><p class="text-slate-300 font-medium text-sm">Menunggu Model ML (Python)</p>';
+    chartContainer.appendChild(overlay);
 
     // 4. Update Status Jadwal Panel
     const statusEl = document.getElementById('schedule-status');
-    if (schedules.length > 0) {
+    if (schedules && schedules.length > 0) {
         document.getElementById('schedule-gen').innerText = `G-TBD`;
         statusEl.className = 'inline-flex w-full justify-center items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium shadow-[inset_0_0_10px_rgba(16,185,129,0.1)]';
         statusEl.innerHTML = '<i class="fa-solid fa-check-circle"></i> Selesai (Optimal)';
     } else {
         document.getElementById('schedule-gen').innerText = `G-0`;
-        statusEl.className = 'inline-flex w-full justify-center items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 text-sm font-medium shadow-[inset_0_0_10px_rgba(245,158,11,0.1)]';
-        statusEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sedang Komputasi...';
+        statusEl.className = 'inline-flex w-full justify-center items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 text-sm font-medium';
+        statusEl.innerHTML = '<i class="fa-solid fa-clock"></i> Menunggu Jadwal...';
     }
 
     // 5. Update Alert Maintenance Table

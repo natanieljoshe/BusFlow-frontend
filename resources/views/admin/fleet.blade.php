@@ -16,17 +16,17 @@
                 <span class="px-2 py-1 bg-emerald-500/10 text-emerald-400 text-xs rounded border border-emerald-500/20"><i class="fa-solid fa-arrow-up"></i> 2.4%</span>
             </div>
             <div class="flex items-end gap-3">
-                <span class="text-4xl font-bold text-white tracking-tight">88.7%</span>
+                <span id="fleet-health" class="text-4xl font-bold text-white tracking-tight">--%</span>
                 <span class="text-indigo-400 text-sm font-medium mb-1">Operational Readiness</span>
             </div>
             <div class="mt-4 flex flex-col gap-2">
                 <div class="flex justify-between text-xs">
                     <span class="text-slate-400">Scheduled Maintenance</span>
-                    <span class="text-slate-200 font-medium">14 Units</span>
+                    <span id="fleet-maintenance-count" class="text-slate-200 font-medium">-- Units</span>
                 </div>
                 <div class="flex justify-between text-xs">
                     <span class="text-slate-400">Critical Failures</span>
-                    <span class="text-red-400 font-medium">2 Units</span>
+                    <span id="fleet-critical-count" class="text-red-400 font-medium">-- Units</span>
                 </div>
             </div>
         </div>
@@ -35,9 +35,9 @@
              <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3 sm:gap-0">
                 <h3 class="text-slate-400 text-sm font-medium tracking-wide uppercase">Fleet Status Distribution</h3>
                 <div class="flex flex-wrap items-center gap-3 text-xs font-medium">
-                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.8)]"></span> <span class="text-slate-300">Active (142)</span></div>
-                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_5px_rgba(245,158,11,0.8)]"></span> <span class="text-slate-300">Maintenance (18)</span></div>
-                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.8)]"></span> <span class="text-slate-300">Alert (2)</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.8)]"></span> <span id="dist-active" class="text-slate-300">Active (--)</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_5px_rgba(245,158,11,0.8)]"></span> <span id="dist-maintenance" class="text-slate-300">Maintenance (--)</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.8)]"></span> <span id="dist-alert" class="text-slate-300">Alert (--)</span></div>
                 </div>
             </div>
             <div class="h-32 w-full flex items-end justify-between gap-1 sm:gap-2 px-1 sm:px-2 mt-2">
@@ -107,6 +107,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500">No fleet data available.</div>`;
             return;
         }
+
+        // Calculate dynamic stats
+        const totalBuses = buses.length;
+        const activeBusesCount = buses.filter(b => (b.status || '').toLowerCase() === 'active').length;
+        const maintenanceBusesCount = buses.filter(b => (b.status || '').toLowerCase() === 'maintenance').length;
+        const alertBusesCount = buses.filter(b => (b.status || '').toLowerCase() === 'alert').length;
+
+        const healthPercent = totalBuses === 0 ? 0 : Math.round((activeBusesCount / totalBuses) * 1000) / 10;
+        
+        document.getElementById('fleet-health').innerText = `${healthPercent}%`;
+        document.getElementById('fleet-maintenance-count').innerText = `${maintenanceBusesCount} Units`;
+        document.getElementById('fleet-critical-count').innerText = `${alertBusesCount} Units`;
+
+        document.getElementById('dist-active').innerText = `Active (${activeBusesCount})`;
+        document.getElementById('dist-maintenance').innerText = `Maintenance (${maintenanceBusesCount})`;
+        document.getElementById('dist-alert').innerText = `Alert (${alertBusesCount})`;
 
         buses.forEach(bus => {
             const isActive = bus.status == 1 || bus.status === true;
