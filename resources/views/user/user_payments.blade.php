@@ -159,60 +159,61 @@
         .cam-btn.is-active { background: rgba(134,239,172,.1); border-color: rgba(134,239,172,.6); color: var(--lime); }
 
         #qr-status { font-size:11px; font-weight:700; text-align:center; min-height:16px; color:var(--muted); transition:color .2s; }
-        #qr-status.ok  { color: var(--lime); }
-        #qr-status.err { color: var(--rose); }
+        #qr-status.ok  { color: #86efac; }
+        #qr-status.err { color: #fb7185; }
+        #cam-toggle.is-active { background: rgba(134,239,172,.1); border-color: rgba(134,239,172,.6); color: #86efac; }
     </style>
 
-    <section class="surface">
-        <div class="surface-header">
+    <section class="border border-violet-500/[0.22] rounded-xl bg-[rgba(4,5,15,0.96)] shadow-[0_8px_40px_rgba(0,0,0,0.7),0_0_0_1px_rgba(168,85,247,0.08)] backdrop-blur-2xl overflow-hidden transition-shadow duration-300 hover:shadow-[0_8px_40px_rgba(0,0,0,0.7),0_0_28px_rgba(168,85,247,0.14)]">
+        <div class="flex items-start justify-between gap-4 p-[18px] border-b border-violet-500/[0.12]">
             <div>
-                <h2>Digital Wallet</h2>
-                <p>Balance, top-up, and payment history will be retrieved from the user database.</p>
+                <h2 class="text-xl font-bold">Digital Wallet</h2>
+                <p class="mt-1.5 text-[#7a8aaa] text-[13px] leading-relaxed">Balance, top-up, and payment history will be retrieved from the user database.</p>
             </div>
-            <span class="pill">{{ data_get($wallet, 'status', 'Waiting data') }}</span>
+            <span class="inline-flex items-center gap-2 min-h-[34px] px-3 border border-violet-500/30 rounded-lg text-[#c084fc] bg-violet-500/10 text-xs font-extrabold">{{ data_get($wallet, 'status', 'Waiting data') }}</span>
         </div>
-        <div class="surface-body">
-            <div class="wallet-layout">
-                <div class="stack">
-                    <div class="balance-card">
-                        <div class="balance-row">
+        <div class="p-[18px]">
+            <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1.05fr)_minmax(280px,0.95fr)] gap-[18px]">
+                <div class="grid gap-[18px]">
+                    <div class="border border-violet-500/[0.28] rounded-[9px] bg-[rgba(4,5,15,0.94)] p-4">
+                        <div class="flex items-start justify-between gap-4 flex-wrap">
                             <div>
-                                <span class="mini-label">Available Balance</span>
-                                <strong>{{ is_numeric($balance) ? 'Rp ' . number_format($balance, 0, ',', '.') : 'Unavailable' }}</strong>
-                                <span class="status-dot">{{ data_get($wallet, 'is_active') ? 'Ready to ride' : 'Need wallet data' }}</span>
+                                <span class="text-[#7a8aaa] text-xs block">Available Balance</span>
+                                <strong class="block mt-1 text-[32px]">{{ is_numeric($balance) ? 'Rp ' . number_format($balance, 0, ',', '.') : 'Unavailable' }}</strong>
+                                <span class="inline-flex items-center gap-[7px] text-[#86efac] text-xs font-bold uppercase mt-2 before:content-[''] before:w-[7px] before:h-[7px] before:rounded-full before:bg-[#86efac] before:shadow-[0_0_18px_#86efac] before:animate-pulse">{{ data_get($wallet, 'is_active') ? 'Ready to ride' : 'Need wallet data' }}</span>
                             </div>
-                            <div class="button-row">
-                                <a class="primary-btn" href="{{ $topUpUrl ?? '#' }}">Top Up</a>
-                                <a class="ghost-btn"   href="{{ $walletCardUrl ?? '#' }}">E-Card</a>
+                            <div class="flex items-center gap-[10px] flex-wrap">
+                                <a class="inline-flex items-center justify-center gap-[7px] min-h-[38px] px-4 rounded-lg text-xs font-extrabold cursor-pointer tracking-wider uppercase relative overflow-hidden transition-all duration-[250ms] no-underline bg-cyan-400/[0.08] border border-cyan-400/50 text-[#22d3ee] hover:bg-cyan-400/[0.16] hover:border-cyan-400 hover:text-white hover:shadow-[0_0_18px_rgba(34,211,238,0.4),inset_0_0_12px_rgba(34,211,238,0.08)]" href="{{ $topUpUrl ?? '#' }}">Top Up</a>
+                                <a class="inline-flex items-center justify-center gap-[7px] min-h-[38px] px-4 rounded-lg text-xs font-extrabold cursor-pointer tracking-wider uppercase relative overflow-hidden transition-all duration-[250ms] no-underline bg-violet-500/5 border border-violet-500/[0.28] text-[#b8c8e8] hover:bg-violet-500/[0.12] hover:border-violet-500/[0.65] hover:text-white hover:shadow-[0_0_14px_rgba(168,85,247,0.25)]" href="{{ $walletCardUrl ?? '#' }}">E-Card</a>
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <div class="card-row" style="margin-bottom:10px;">
-                            <span class="mini-label">Recent Activity</span>
-                            <a class="meta" href="{{ route('user.favourites') }}">View trip log</a>
+                        <div class="flex items-start justify-between gap-3 mb-[10px]">
+                            <span class="text-[#7a8aaa] text-xs">Recent Activity</span>
+                            <a class="text-[#7a8aaa] text-xs" href="{{ route('user.favourites') }}">View trip log</a>
                         </div>
-                        <ul class="list">
+                        <ul class="grid gap-[10px] list-none">
                             @forelse ($walletActivities as $activity)
                                 @php
                                     $amount   = data_get($activity, 'amount');
                                     $isCredit = is_numeric($amount) && $amount > 0;
                                 @endphp
-                                <li class="item-card">
-                                    <div class="card-row">
+                                <li class="border border-violet-500/[0.16] rounded-[9px] bg-[rgba(4,5,15,0.92)] transition-all duration-[220ms] hover:border-violet-500/40 hover:shadow-[0_0_18px_rgba(168,85,247,0.1)] grid gap-[10px] p-[13px]">
+                                    <div class="flex items-start justify-between gap-3">
                                         <div>
-                                            <strong>{{ data_get($activity, 'title', data_get($activity, 'description', 'Wallet activity')) }}</strong>
-                                            <div class="meta">{{ data_get($activity, 'meta', data_get($activity, 'created_at', '-')) }}</div>
+                                            <strong class="text-[15px] mb-1 block">{{ data_get($activity, 'title', data_get($activity, 'description', 'Wallet activity')) }}</strong>
+                                            <div class="text-[#7a8aaa] text-xs">{{ data_get($activity, 'meta', data_get($activity, 'created_at', '-')) }}</div>
                                         </div>
-                                        <span class="amount {{ $isCredit ? 'is-credit' : 'is-debit' }}">
+                                        <span class="{{ $isCredit ? 'text-[#86efac]' : 'text-[#fb7185]' }} text-lg font-black text-right">
                                             {{ is_numeric($amount) ? ($isCredit ? '+' : '-') . 'Rp ' . number_format(abs($amount), 0, ',', '.') : '-' }}
                                         </span>
                                     </div>
                                 </li>
                             @empty
-                                <li class="empty-state">
-                                    <strong>No payment history yet.</strong>
+                                <li class="grid gap-2 place-items-start p-[18px] text-[#7a8aaa] min-h-[120px] border border-violet-500/[0.16] rounded-[9px] bg-[rgba(4,5,15,0.92)] transition-all duration-[220ms]">
+                                    <strong class="text-[#eef4ff]">No payment history yet.</strong>
                                     <span>History will appear from the wallet transaction table once the database is connected.</span>
                                 </li>
                             @endforelse
@@ -221,10 +222,10 @@
                 </div>
 
                 {{-- ── QR Panel ── --}}
-                <div class="qr-panel">
+                <div class="border border-violet-500/[0.28] rounded-[9px] bg-[rgba(4,5,15,0.94)] grid gap-[14px] justify-items-center p-4 border-violet-500/[0.32]">
                     <div>
-                        <span class="mini-label">Scan to Board</span>
-                        <h3 style="margin:6px 0 0;">QR Boarding</h3>
+                        <span class="text-[#7a8aaa] text-xs block">Scan to Board</span>
+                        <h3 class="mt-1.5 mb-0">QR Boarding</h3>
                     </div>
 
                     <div class="qr-scanner" id="qr-scanner">
@@ -286,9 +287,9 @@
                         <canvas id="qr-canvas" style="display:none;"></canvas>
                     </div>
 
-                    <div id="qr-status">Point camera at QR code</div>
+                    <div class="text-[11px] font-bold text-center min-h-[16px] text-[#7a8aaa] transition-colors duration-200" id="qr-status">Point camera at QR code</div>
 
-                    <button class="cam-btn" id="cam-toggle" type="button">
+                    <button class="inline-flex items-center gap-[7px] min-h-[34px] px-[14px] rounded-lg text-[11px] font-extrabold tracking-wider uppercase cursor-pointer transition-all duration-[220ms] overflow-hidden bg-cyan-400/[0.07] border border-cyan-400/40 text-[#22d3ee] hover:bg-cyan-400/[0.15] hover:border-cyan-400 hover:shadow-[0_0_16px_rgba(34,211,238,0.35)] hover:text-white" id="cam-toggle" type="button">
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                             <rect x="1" y="3.5" width="12" height="8.5" rx="2" stroke="currentColor" stroke-width="1.3"/>
                             <circle cx="7" cy="7.75" r="2.2" stroke="currentColor" stroke-width="1.3"/>

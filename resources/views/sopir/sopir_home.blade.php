@@ -6,117 +6,62 @@
 
 @section('content')
 <style>
-    .status-card .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 10px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 800;
-        margin-top: 8px;
-        width: fit-content;
-    }
-    .status-card .status-badge.aktif { background: rgba(34,197,94,.16); color: #4ade80; }
-    .status-card .status-badge.istirahat { background: rgba(250,204,21,.16); color: #fde68a; }
-    .status-card .status-badge.cuti { background: rgba(248,113,113,.16); color: #fda4af; }
-
-    .status-switcher {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 12px;
-    }
-    .status-switcher button {
-        border: 1px solid rgba(168,85,247,.25);
-        background: rgba(4,5,15,.8);
-        color: var(--muted);
-        padding: 8px 12px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 800;
-        cursor: pointer;
-        transition: all .2s ease;
-    }
-    .status-switcher button:hover { border-color: rgba(168,85,247,.4); color: var(--text); }
     .status-switcher button.active.aktif { background: #16a34a; color: white; border-color: #16a34a; }
     .status-switcher button.active.istirahat { background: #eab308; color: #111827; border-color: #eab308; }
     .status-switcher button.active.cuti { background: #dc2626; color: white; border-color: #dc2626; }
-
-    .single-panel {
-        display: grid;
-        gap: 16px;
-        padding: 18px;
-        border: 1px solid rgba(168,85,247,.22);
-        border-radius: 12px;
-        background: rgba(4,5,15,.96);
-        box-shadow: 0 8px 40px rgba(0,0,0,.7), 0 0 0 1px rgba(168,85,247,.08);
-        backdrop-filter: blur(24px);
-    }
-    .panel-section {
-        padding: 14px;
-        border: 1px solid rgba(168,85,247,.14);
-        border-radius: 10px;
-        background: rgba(4,5,15,.72);
-    }
-    .panel-row {
-        display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        gap: 14px;
-    }
-    @media (max-width: 768px) {
-        .panel-row { grid-template-columns: 1fr; }
-    }
+    .status-badge.aktif { background: rgba(34,197,94,.16); color: #4ade80; }
+    .status-badge.istirahat { background: rgba(250,204,21,.16); color: #fde68a; }
+    .status-badge.cuti { background: rgba(248,113,113,.16); color: #fda4af; }
 </style>
 
-    <div class="single-panel">
-        <div class="panel-section">
-            <span class="pill">Today's Assignment</span>
-            <h2 style="margin-top:12px;">Morning trip • Main Terminal → Cileungsi</h2>
-            <p>Departure time: <strong>06:30</strong> • Partner conductor: <strong>Rian</strong></p>
+    <div class="grid gap-4 p-[18px] border border-violet-500/[0.22] rounded-xl bg-[rgba(4,5,15,0.96)] shadow-[0_8px_40px_rgba(0,0,0,0.7),0_0_0_1px_rgba(168,85,247,0.08)] backdrop-blur-2xl">
+        <div class="p-[14px] border border-violet-500/[0.14] rounded-[10px] bg-[rgba(4,5,15,0.72)]">
+            <span class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-cyan-400/[0.12] text-[#22d3ee] text-xs font-bold uppercase tracking-wider">Today's Assignment</span>
+            <h2 class="mt-3 text-lg font-bold">Morning trip • Main Terminal → Cileungsi</h2>
+            <p class="text-[#b8c8e8] leading-relaxed">Departure time: <strong>06:30</strong> • Partner conductor: <strong>Rian</strong></p>
         </div>
 
-        <div class="panel-row">
-            <div class="panel-section status-card">
-                <span class="pill">My Status</span>
-                <span class="status-badge aktif" id="driver-status-badge">Active</span>
-                <p id="driver-status-desc" style="margin-top:8px;">You are ready to work and receive today's assignments.</p>
-                <div class="status-switcher" role="group" aria-label="Change driver status">
-                    <button type="button" class="active aktif" data-status="aktif">Active</button>
-                    <button type="button" data-status="istirahat">Rest</button>
-                    <button type="button" data-status="cuti">Day Off</button>
+        <div class="grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] gap-[14px]">
+            <div class="status-card p-[14px] border border-violet-500/[0.14] rounded-[10px] bg-[rgba(4,5,15,0.72)]">
+                <span class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-cyan-400/[0.12] text-[#22d3ee] text-xs font-bold uppercase tracking-wider">My Status</span>
+                <span class="status-badge inline-flex items-center gap-1.5 px-[10px] py-1.5 rounded-full text-xs font-extrabold mt-2 w-fit aktif" id="driver-status-badge">Active</span>
+                <p id="driver-status-desc" class="mt-2 text-[#b8c8e8] leading-relaxed">You are ready to work and receive today's assignments.</p>
+                <div class="status-switcher flex flex-wrap gap-2 mt-3" role="group" aria-label="Change driver status">
+                    <button type="button" class="border border-violet-500/25 bg-[rgba(4,5,15,0.8)] text-[#7a8aaa] px-3 py-2 rounded-full text-xs font-extrabold cursor-pointer transition-all duration-200 hover:border-violet-500/40 hover:text-[#eef4ff] active aktif" data-status="aktif">Active</button>
+                    <button type="button" class="border border-violet-500/25 bg-[rgba(4,5,15,0.8)] text-[#7a8aaa] px-3 py-2 rounded-full text-xs font-extrabold cursor-pointer transition-all duration-200 hover:border-violet-500/40 hover:text-[#eef4ff]" data-status="istirahat">Rest</button>
+                    <button type="button" class="border border-violet-500/25 bg-[rgba(4,5,15,0.8)] text-[#7a8aaa] px-3 py-2 rounded-full text-xs font-extrabold cursor-pointer transition-all duration-200 hover:border-violet-500/40 hover:text-[#eef4ff]" data-status="cuti">Day Off</button>
                 </div>
             </div>
-            <div class="panel-section">
-                <span class="pill">Fleet</span>
-                <strong>Bus B-12</strong>
-                <p style="margin-top:8px;">Plate: <strong>DK 1234 AB</strong></p>
+            <div class="p-[14px] border border-violet-500/[0.14] rounded-[10px] bg-[rgba(4,5,15,0.72)]">
+                <span class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-cyan-400/[0.12] text-[#22d3ee] text-xs font-bold uppercase tracking-wider">Fleet</span>
+                <strong class="block mt-3 text-lg">Bus B-12</strong>
+                <p class="mt-2 text-[#b8c8e8] leading-relaxed">Plate: <strong>DK 1234 AB</strong></p>
             </div>
         </div>
 
-        <div class="panel-section">
-            <h3>Assignment Details</h3>
-            <div class="list">
-                <div class="list-item">
+        <div class="p-[14px] border border-violet-500/[0.14] rounded-[10px] bg-[rgba(4,5,15,0.72)]">
+            <h3 class="text-lg font-bold mb-3">Assignment Details</h3>
+            <div class="grid gap-[12px]">
+                <div class="flex justify-between items-center gap-[10px] p-[12px_14px] rounded-xl bg-[rgba(4,5,15,0.65)] border border-[rgba(148,163,184,0.08)]">
                     <div>
-                        <strong>Route</strong>
-                        <div><span>Main Terminal → Cileungsi</span></div>
+                        <strong class="block">Route</strong>
+                        <div><span class="text-[#7a8aaa] text-[13px]">Main Terminal → Cileungsi</span></div>
                     </div>
-                    <span class="badge">Depart 06:30</span>
+                    <span class="inline-flex items-center px-[10px] py-1.5 rounded-full bg-[rgba(134,239,172,0.14)] text-[#86efac] text-[11px] font-bold uppercase tracking-wider">Depart 06:30</span>
                 </div>
-                <div class="list-item">
+                <div class="flex justify-between items-center gap-[10px] p-[12px_14px] rounded-xl bg-[rgba(4,5,15,0.65)] border border-[rgba(148,163,184,0.08)]">
                     <div>
-                        <strong>Conductor</strong>
-                        <div><span>Rian</span></div>
+                        <strong class="block">Conductor</strong>
+                        <div><span class="text-[#7a8aaa] text-[13px]">Rian</span></div>
                     </div>
-                    <span class="badge warn">Partner</span>
+                    <span class="inline-flex items-center px-[10px] py-1.5 rounded-full bg-[rgba(244,191,85,0.16)] text-[#f4bf55] text-[11px] font-bold uppercase tracking-wider">Partner</span>
                 </div>
-                <div class="list-item">
+                <div class="flex justify-between items-center gap-[10px] p-[12px_14px] rounded-xl bg-[rgba(4,5,15,0.65)] border border-[rgba(148,163,184,0.08)]">
                     <div>
-                        <strong>Status</strong>
-                        <div><span id="driver-status-text">Ready to go</span></div>
+                        <strong class="block">Status</strong>
+                        <div><span class="text-[#7a8aaa] text-[13px]" id="driver-status-text">Ready to go</span></div>
                     </div>
-                    <span class="badge" id="driver-status-pill">Active</span>
+                    <span class="inline-flex items-center px-[10px] py-1.5 rounded-full bg-[rgba(134,239,172,0.14)] text-[#86efac] text-[11px] font-bold uppercase tracking-wider" id="driver-status-pill">Active</span>
                 </div>
             </div>
         </div>
@@ -165,7 +110,7 @@
                     btn.classList.toggle('cuti', btn.dataset.status === 'cuti' && isActive);
                 });
                 badge.textContent = data.badge;
-                badge.className = 'status-badge ' + status;
+                badge.className = 'status-badge inline-flex items-center gap-1.5 px-[10px] py-1.5 rounded-full text-xs font-extrabold mt-2 w-fit ' + status;
                 desc.textContent = data.desc;
                 text.textContent = data.text;
                 pill.textContent = data.pill;

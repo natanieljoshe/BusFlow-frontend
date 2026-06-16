@@ -5,55 +5,36 @@
 @section('page_description', 'View the full route, stop list, and departure time for your trip.')
 
 @section('content')
-<style>
-    .single-panel {
-        display: grid;
-        gap: 16px;
-        padding: 18px;
-        border: 1px solid rgba(168,85,247,.22);
-        border-radius: 12px;
-        background: rgba(4,5,15,.96);
-        box-shadow: 0 8px 40px rgba(0,0,0,.7), 0 0 0 1px rgba(168,85,247,.08);
-        backdrop-filter: blur(24px);
-    }
-    .panel-section {
-        padding: 14px;
-        border: 1px solid rgba(168,85,247,.14);
-        border-radius: 10px;
-        background: rgba(4,5,15,.72);
-    }
-</style>
-
-    <div class="single-panel">
-        <div class="panel-section">
-            <span class="pill">Trip Details</span>
-            <h2 style="margin-top:12px;">Main Terminal → Cileungsi</h2>
-            <p>Departure time: <strong>06:30</strong> • Estimated arrival: <strong>07:45</strong></p>
+    <div class="grid gap-4 p-[18px] border border-violet-500/[0.22] rounded-xl bg-[rgba(4,5,15,0.96)] shadow-[0_8px_40px_rgba(0,0,0,0.7),0_0_0_1px_rgba(168,85,247,0.08)] backdrop-blur-2xl">
+        <div class="p-[14px] border border-violet-500/[0.14] rounded-[10px] bg-[rgba(4,5,15,0.72)]">
+            <span class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-cyan-400/[0.12] text-[#22d3ee] text-xs font-bold uppercase tracking-wider">Trip Details</span>
+            <h2 class="mt-3 text-lg font-bold">Main Terminal → Cileungsi</h2>
+            <p class="text-[#b8c8e8] leading-relaxed">Departure time: <strong>06:30</strong> • Estimated arrival: <strong>07:45</strong></p>
         </div>
 
-        <div class="panel-section">
-            <h3>Route Details</h3>
-            <div class="list">
-                <div class="list-item">
+        <div class="p-[14px] border border-violet-500/[0.14] rounded-[10px] bg-[rgba(4,5,15,0.72)]">
+            <h3 class="text-lg font-bold mb-3">Route Details</h3>
+            <div class="grid gap-[12px]">
+                <div class="flex justify-between items-center gap-[10px] p-[12px_14px] rounded-xl bg-[rgba(4,5,15,0.65)] border border-[rgba(148,163,184,0.08)]">
                     <div>
-                        <strong>Origin</strong>
-                        <div><span>Main Terminal</span></div>
+                        <strong class="block">Origin</strong>
+                        <div><span class="text-[#7a8aaa] text-[13px]">Main Terminal</span></div>
                     </div>
-                    <span class="badge">Start</span>
+                    <span class="inline-flex items-center px-[10px] py-1.5 rounded-full bg-[rgba(134,239,172,0.14)] text-[#86efac] text-[11px] font-bold uppercase tracking-wider">Start</span>
                 </div>
-                <div class="list-item">
+                <div class="flex justify-between items-center gap-[10px] p-[12px_14px] rounded-xl bg-[rgba(4,5,15,0.65)] border border-[rgba(148,163,184,0.08)]">
                     <div>
-                        <strong>Destination</strong>
-                        <div><span>Cileungsi</span></div>
+                        <strong class="block">Destination</strong>
+                        <div><span class="text-[#7a8aaa] text-[13px]">Cileungsi</span></div>
                     </div>
-                    <span class="badge">Finish</span>
+                    <span class="inline-flex items-center px-[10px] py-1.5 rounded-full bg-[rgba(134,239,172,0.14)] text-[#86efac] text-[11px] font-bold uppercase tracking-wider">Finish</span>
                 </div>
-                <div class="list-item">
+                <div class="flex justify-between items-center gap-[10px] p-[12px_14px] rounded-xl bg-[rgba(4,5,15,0.65)] border border-[rgba(148,163,184,0.08)]">
                     <div>
-                        <strong>Stops</strong>
-                        <div><span>Pasar Baru • Simpang Lima • Taman Indah • Cileungsi</span></div>
+                        <strong class="block">Stops</strong>
+                        <div><span class="text-[#7a8aaa] text-[13px]">Pasar Baru • Simpang Lima • Taman Indah • Cileungsi</span></div>
                     </div>
-                    <span class="badge warn">Stops</span>
+                    <span class="inline-flex items-center px-[10px] py-1.5 rounded-full bg-[rgba(244,191,85,0.16)] text-[#f4bf55] text-[11px] font-bold uppercase tracking-wider">Stops</span>
                 </div>
             </div>
         </div>
