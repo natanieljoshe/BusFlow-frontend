@@ -13,7 +13,7 @@
         <div class="relative z-10">
             <h3 class="text-[#7a8aaa] text-sm font-semibold uppercase tracking-wider mb-2">Available Balance</h3>
             <div class="text-4xl font-black text-white mb-6">
-                Rp {{ number_format($wallet['balance'] ?? 0, 0, ',', '.') }}
+                $ {{ number_format($wallet['balance'] ?? 0, 2, '.', ',') }}
             </div>
             
             <button onclick="openTopupModal()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all flex items-center justify-center gap-2">
@@ -43,7 +43,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-sm font-bold {{ $item['type'] === 'top_up' ? 'text-emerald-400' : 'text-rose-400' }}">
-                            {{ $item['type'] === 'top_up' ? '+' : '-' }}Rp {{ number_format($item['amount'], 0, ',', '.') }}
+                            {{ $item['type'] === 'top_up' ? '+' : '-' }}${{ number_format($item['amount'], 2, '.', ',') }}
                         </p>
                     </div>
                 </div>
@@ -66,14 +66,14 @@
         
         <form id="topup-form" class="space-y-4">
             <div>
-                <label class="block text-xs font-medium text-slate-400 mb-1">Amount (Rp)</label>
-                <input type="number" id="topup-amount" required min="10000" step="1000" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 text-lg font-bold" placeholder="50000">
+                <label class="block text-xs font-medium text-slate-400 mb-1">Amount (USD)</label>
+                <input type="number" id="topup-amount" required min="5" step="5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 text-lg font-bold" placeholder="20">
             </div>
             
             <div class="grid grid-cols-3 gap-2 mt-2">
-                <button type="button" onclick="setAmount(20000)" class="py-2 text-sm border border-slate-700 rounded hover:bg-slate-800 text-slate-300 transition-colors">20K</button>
-                <button type="button" onclick="setAmount(50000)" class="py-2 text-sm border border-slate-700 rounded hover:bg-slate-800 text-slate-300 transition-colors">50K</button>
-                <button type="button" onclick="setAmount(100000)" class="py-2 text-sm border border-slate-700 rounded hover:bg-slate-800 text-slate-300 transition-colors">100K</button>
+                <button type="button" onclick="setAmount(10)" class="py-2 text-sm border border-slate-700 rounded hover:bg-slate-800 text-slate-300 transition-colors">$10</button>
+                <button type="button" onclick="setAmount(20)" class="py-2 text-sm border border-slate-700 rounded hover:bg-slate-800 text-slate-300 transition-colors">$20</button>
+                <button type="button" onclick="setAmount(50)" class="py-2 text-sm border border-slate-700 rounded hover:bg-slate-800 text-slate-300 transition-colors">$50</button>
             </div>
 
             <div class="flex justify-end gap-3 mt-8">

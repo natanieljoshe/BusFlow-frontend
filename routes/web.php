@@ -38,6 +38,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/schedule', function () { return view('admin.schedule'); })->name('schedule');
     Route::get('/analytics', function () { return view('admin.analytics'); })->name('analytics');
     Route::get('/boarding-scanner', function () { return view('admin.boarding-scanner'); })->name('boarding-scanner');
+    Route::get('/ga-optimizer', function () { return view('admin.ga-optimizer'); })->name('ga-optimizer');
+    Route::get('/ga-results', function () { 
+        $payload = json_decode(file_get_contents(app_path('Algorithms/src/payload.JSON')), true);
+        return view('admin.ga-results', compact('payload'));
+    })->name('ga-results');
 });
 
 Route::redirect('/user', '/user/routes')->name('user.home');

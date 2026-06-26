@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </a>
                 <div class="p-5 space-y-4">
                     <div class="mt-1 flex justify-end gap-2">
-                        <button onclick="editBus(${id}, '${plate}', ${capacity}, ${isActive ? 1 : 0}, [${bus.drivers ? bus.drivers.map(d=>d.id).join(',') : ''}], [${bus.conductors ? bus.conductors.map(c=>c.id).join(',') : ''}], ${bus.route_id || 'null'})" class="px-3 py-1.5 text-[11px] font-medium rounded border border-indigo-700/50 text-indigo-300 hover:bg-indigo-600 hover:text-white transition-colors"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button onclick="window.location.href='/admin/fleet/' + ${id}" class="px-3 py-1.5 text-[11px] font-medium rounded border border-indigo-700/50 text-indigo-300 hover:bg-indigo-600 hover:text-white transition-colors"><i class="fa-solid fa-pen"></i> Edit</button>
                         <button onclick="deleteBus(${id})" class="px-3 py-1.5 text-[11px] font-medium rounded border border-red-700/50 text-red-300 hover:bg-red-600 hover:text-white transition-colors"><i class="fa-solid fa-trash"></i> Delete</button>
                     </div>
                 </div>

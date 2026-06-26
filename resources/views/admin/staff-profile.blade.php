@@ -99,6 +99,15 @@
                     </div>
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-clock text-indigo-400 text-xs"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500">Shift</p>
+                            <p id="info-shift" class="text-sm text-white">--</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
                             <i class="fa-solid fa-calendar-plus text-indigo-400 text-xs"></i>
                         </div>
                         <div>
@@ -296,6 +305,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('info-employee-id').textContent = s.employee_id || 'N/A';
         document.getElementById('info-email').textContent = s.user?.email || 'N/A';
         document.getElementById('info-phone').textContent = s.phone || 'N/A';
+        const shiftStart = s.shift_start ? s.shift_start.substring(0,5) : '--:--';
+        const shiftEnd = s.shift_end ? s.shift_end.substring(0,5) : '--:--';
+        document.getElementById('info-shift').textContent = (s.shift_start || s.shift_end) ? `${shiftStart} - ${shiftEnd}` : 'Not Set';
         const joined = s.joined_at ? new Date(s.joined_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
         document.getElementById('info-joined').textContent = joined;
 

@@ -49,7 +49,7 @@
             <div class="flex flex-col gap-1">
                 <span class="text-[#b8c8e8] text-sm">Available Balance</span>
                 <strong class="text-[32px] font-black text-[#22d3ee] flex items-baseline gap-1">
-                    <span class="text-lg">Rp</span> {{ number_format($wallet['balance'] ?? 0, 0, ',', '.') }}
+                    <span class="text-lg">$</span> {{ number_format($wallet['balance'] ?? 0, 2, '.', ',') }}
                 </strong>
             </div>
             
@@ -76,7 +76,7 @@
                         <span class="text-[#7a8aaa] text-xs">{{ \Carbon\Carbon::parse($allBookings[0]['created_at'])->timezone('Asia/Jakarta')->format('d M Y, H:i') }}</span>
                     </div>
                     <strong class="{{ $allBookings[0]['status'] == 'active' ? 'text-amber-400' : 'text-rose-400' }} text-sm">
-                        {{ $allBookings[0]['status'] == 'active' ? 'IN PROGRESS' : '- Rp ' . number_format($allBookings[0]['fare'], 0, ',', '.') }}
+                        {{ $allBookings[0]['status'] == 'active' ? 'IN PROGRESS' : '- $' . number_format($allBookings[0]['fare'], 2, '.', ',') }}
                     </strong>
                 </div>
             </div>

@@ -46,10 +46,10 @@
                         class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500 text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Base Fare (Rp)</label>
-                    <input type="number" id="fare-input" min="5000" step="500"
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Base Fare (USD)</label>
+                    <input type="number" id="fare-input" min="3" step="1"
                         class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500 text-sm">
-                    <p class="text-[10px] text-slate-500 mt-1">Biaya tiket flat per perjalanan (bukan per km)</p>
+                    <p class="text-[10px] text-slate-500 mt-1">Flat ticket price per trip (in USD)</p>
                 </div>
                 <div class="flex justify-end gap-3 mt-4">
                     <button type="button" onclick="closeEditInfoModal()" class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors">Cancel</button>
@@ -180,8 +180,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Update fare display
             const rawFare = parseFloat(currentRoute.fare_per_km || 0);
-            const fare = Math.max(rawFare, 5000);
-            document.getElementById('route-fare-display').textContent = 'Rp ' + fare.toLocaleString('id-ID');
+            const fare = Math.max(rawFare, 3);
+            document.getElementById('route-fare-display').textContent = '$' + fare.toLocaleString('en-US');
             document.getElementById('fare-input').value = fare;
             
             const haltes = currentRoute.haltes || [];

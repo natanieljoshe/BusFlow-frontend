@@ -87,29 +87,24 @@
 
     <!-- 5 & 6. Chart & Schedule Status -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Performa Algoritma GA -->
+        <!-- Grafik Trips -->
         <div class="lg:col-span-2 bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-6 relative overflow-hidden">
             <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
             
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                 <div>
-                    <h3 class="text-lg font-semibold text-slate-200">Performa Algoritma GA</h3>
-                    <p class="text-xs text-slate-400 mt-1">Monitoring optimasi penjadwalan terbaru</p>
+                    <h3 class="text-lg font-semibold text-slate-200">Tren Operasional (Trips)</h3>
+                    <p class="text-xs text-slate-400 mt-1">Monitoring jumlah trip seminggu terakhir</p>
                 </div>
                 <div class="flex bg-slate-800/80 rounded-lg p-1 border border-slate-700/50">
                     <div class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-300">
                         <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_5px_rgba(99,102,241,0.8)]"></span>
-                        Fitness Score
-                    </div>
-                    <div class="w-px h-5 bg-slate-700 my-auto"></div>
-                    <div class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-300">
-                        <span class="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.8)]"></span>
-                        Total Penalty
+                        Jumlah Trips
                     </div>
                 </div>
             </div>
             <div class="h-[280px] w-full relative">
-                <canvas id="gaChart"></canvas>
+                <canvas id="tripsChart"></canvas>
             </div>
         </div>
 
@@ -248,46 +243,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Chart.js Setup
-    const ctx = document.getElementById('gaChart').getContext('2d');
+    const ctx = document.getElementById('tripsChart').getContext('2d');
     const gradientIndigo = ctx.createLinearGradient(0, 0, 0, 400);
     gradientIndigo.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
     gradientIndigo.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
-    const gradientPurple = ctx.createLinearGradient(0, 0, 0, 400);
-    gradientPurple.addColorStop(0, 'rgba(168, 85, 247, 0.4)');
-    gradientPurple.addColorStop(1, 'rgba(168, 85, 247, 0.0)');
 
     const dashboardChart = new Chart(ctx, {
-        type: 'line',
+        type: 'bar',
         data: {
-            labels: ['Gen 1', 'Gen 2', 'Gen 3', 'Gen 4', 'Gen 5'],
+            labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
             datasets: [
                 {
-                    label: 'Fitness Score',
-                    data: [0, 0, 0, 0, 0],
-                    borderColor: '#818cf8',
+                    label: 'Trips Harian',
+                    data: [15, 22, 18, 30, 25, 35, 20],
                     backgroundColor: gradientIndigo,
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: '#1e293b',
-                    pointBorderColor: '#818cf8',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                },
-                {
-                    label: 'Total Penalty',
-                    data: [0, 0, 0, 0, 0],
-                    borderColor: '#c084fc',
-                    backgroundColor: gradientPurple,
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: '#1e293b',
-                    pointBorderColor: '#c084fc',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
+                    borderColor: '#818cf8',
+                    borderWidth: 1,
+                    borderRadius: 4
                 }
             ]
         },
@@ -327,17 +299,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('stat-trips').innerText = trips.length;
 
     // 3. Update Chart: Performa Algoritma GA
-    // Dihapus sementara menunggu API Python
-    dashboardChart.data.labels = [];
-    dashboardChart.data.datasets[0].data = [];
-    dashboardChart.data.datasets[1].data = [];
-    dashboardChart.update();
-    
-    const chartContainer = document.getElementById('gaChart').parentElement;
-    const overlay = document.createElement('div');
-    overlay.className = 'absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-sm z-10 rounded-lg';
-    overlay.innerHTML = '<i class="fa-solid fa-hourglass-half text-3xl text-indigo-400 mb-3 animate-pulse"></i><p class="text-slate-300 font-medium text-sm">Menunggu Model ML (Python)</p>';
-    chartContainer.appendChild(overlay);
+    // Using mock data for trips instead of waiting for GA.
+    if(trips && trips.length > 0) {
+        dashboardChart.data.datasets[0].data[6] = trips.length;
+        dashboardChart.update();
+    }
 
     // 4. Update Status Jadwal Panel
     const statusEl = document.getElementById('schedule-status');
@@ -352,7 +318,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 5. Update Alert Maintenance Table
-    const maintenanceBuses = buses.filter(b => (b.status || '').toLowerCase() === 'maintenance' || (b.status || '').toLowerCase() === 'alert');
+    const maintenanceBuses = buses.filter(b => b.status == 0 || b.status === false || (typeof b.status === 'string' && (b.status.toLowerCase() === 'maintenance' || b.status.toLowerCase() === 'alert')));
     const tbody = document.getElementById('maintenance-table-body');
     
     tbody.innerHTML = '';
