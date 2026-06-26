@@ -9,7 +9,7 @@ class AuthController extends Controller
 {
     private function getApiUrl()
     {
-        return env('API_URL', 'http://127.0.0.1:8000/api');
+        return env('API_URL', 'http://127.0.0.1:8010/api');
     }
 
     public function login(Request $request)

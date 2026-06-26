@@ -96,7 +96,7 @@ window.openAddStaffModal = async function() {
     setTimeout(() => document.getElementById('add-staff-modal-content').classList.remove('scale-95'), 10);
 
     // Load available users (not yet staff)
-    const API_URL = window.API_URL || 'http://localhost:8001';
+    const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
     const token = localStorage.getItem('token');
     const userSel = document.getElementById('staff-user-id');
     userSel.innerHTML = '<option value="">Loading...</option>';
@@ -124,7 +124,7 @@ window.closeAddStaffModal = function() {
 
 document.getElementById('add-staff-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const API_URL = window.API_URL || 'http://localhost:8001';
+    const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
     const token = localStorage.getItem('token');
     const roleType = document.getElementById('staff-role-type').value;
     const userId = document.getElementById('staff-user-id').value;
@@ -166,7 +166,7 @@ document.getElementById('add-staff-form').addEventListener('submit', async funct
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const API_URL = window.API_URL || 'http://localhost:8001';
+    const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
     const token = localStorage.getItem('token');
     if (!token) {
         document.getElementById('staff-grid').innerHTML = `<div class="col-span-full text-center py-10 text-red-400">Silakan login terlebih dahulu. Token tidak ditemukan.</div>`;

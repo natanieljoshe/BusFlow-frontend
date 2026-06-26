@@ -114,7 +114,7 @@
 
         if (token) {
             try {
-                await fetch(`${window.API_URL}/api/logout`, {
+                await fetch(`${API_URL}/api/logout`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,

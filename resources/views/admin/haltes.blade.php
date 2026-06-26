@@ -79,7 +79,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
-    const API_URL = window.API_URL || 'http://localhost:8001';
+    const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
     const token = localStorage.getItem('token');
     if (!token) {
         document.getElementById('haltes-grid').innerHTML = `<div class="col-span-full text-center py-10 text-red-400">Silakan login terlebih dahulu. Token tidak ditemukan.</div>`;
@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.deleteHalte = async function(id) {
         if(!confirm('Are you sure you want to delete this halte?')) return;
         try {
-            const response = await fetch(`${window.API_URL || 'http://localhost:8001'}/api/admin/haltes/${id}`, {
+            const response = await fetch(`${API_URL}/api/admin/haltes/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`, 'Accept': 'application/json' }
             });
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (lng) payload.longitude = lng;
 
         try {
-            const response = await fetch(`${window.API_URL || 'http://localhost:8001'}${url}`, {
+            const response = await fetch(`${API_URL}${url}`, {
                 method: method,
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,

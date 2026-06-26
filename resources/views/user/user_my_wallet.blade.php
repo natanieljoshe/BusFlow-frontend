@@ -68,29 +68,23 @@
         </div>
     </div>
 
-    <!-- Topup Modal -->
-    <div id="topup-modal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/80 backdrop-blur-sm">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-sm p-6 shadow-2xl transform scale-95 transition-transform duration-300"
-            id="topup-modal-content">
-            <h3 class="text-xl font-bold text-white mb-2">Top Up Balance</h3>
-            <p class="text-sm text-slate-400 mb-6">Enter amount to add to your wallet.</p>
-
-            <form id="topup-form" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Amount (USD)</label>
-                    <input type="number" id="topup-amount" required min="5" step="5"
-                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 text-lg font-bold"
-                        placeholder="20">
-                </div>
-
-                <div class="grid grid-cols-3 gap-2 mt-2">
-                    <button type="button" onclick="setAmount(10)"
-                        class="py-2 text-sm border border-slate-700 rounded hover:bg-slate-800 text-slate-300 transition-colors">$10</button>
-                    <button type="button" onclick="setAmount(20)"
-                        class="py-2 text-sm border border-slate-700 rounded hover:bg-slate-800 text-slate-300 transition-colors">$20</button>
-                    <button type="button" onclick="setAmount(50)"
-                        class="py-2 text-sm border border-slate-700 rounded hover:bg-slate-800 text-slate-300 transition-colors">$50</button>
-                </div>
+<!-- Topup Modal -->
+<div id="topup-modal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/80 backdrop-blur-sm">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-sm p-6 shadow-2xl transform scale-95 transition-transform duration-300" id="topup-modal-content">
+        <h3 class="text-xl font-bold text-white mb-2">Top Up Balance</h3>
+        <p class="text-sm text-slate-400 mb-6">Enter amount to add to your wallet.</p>
+        
+        <form id="topup-form" class="space-y-4">
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Amount (USD)</label>
+                <input type="number" id="topup-amount" required min="3" step="1" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 text-lg font-bold" placeholder="20">
+            </div>
+            
+            <div class="grid grid-cols-3 gap-2 mt-2">
+                <button type="button" onclick="setAmount(10)" class="py-2 text-sm border border-slate-700 rounded hover:bg-slate-800 text-slate-300 transition-colors">$10</button>
+                <button type="button" onclick="setAmount(20)" class="py-2 text-sm border border-slate-700 rounded hover:bg-slate-800 text-slate-300 transition-colors">$20</button>
+                <button type="button" onclick="setAmount(50)" class="py-2 text-sm border border-slate-700 rounded hover:bg-slate-800 text-slate-300 transition-colors">$50</button>
+            </div>
 
                 <div class="flex justify-end gap-3 mt-8">
                     <button type="button" onclick="closeTopupModal()"
@@ -135,19 +129,16 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
             btn.disabled = true;
 
-            try {
-                const API_URL = "{{ env('API_URL') }}" || 'http://127.0.0.1:8010';
-                const res = await fetch(`${API_URL}/api/wallet/topup`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        amount: amount
-                    })
-                });
+        try {
+            const res = await fetch(`{{ env('API_URL', 'http://127.0.0.1:8010/api') }}/wallet/topup`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ amount: amount })
+            });
 
                 if (res.ok) {
                     window.location.reload();

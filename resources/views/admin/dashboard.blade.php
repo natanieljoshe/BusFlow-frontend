@@ -199,7 +199,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
     // Inject API URL dynamically or fallback
-    const API_URL = window.API_URL || 'http://localhost:8001';
+    const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
     
     // Retrieve Bearer token from localStorage
     const token = localStorage.getItem('token');

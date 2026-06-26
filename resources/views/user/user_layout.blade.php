@@ -62,7 +62,7 @@
         .star-btn.is-selected { color:var(--amber);background:rgba(244,191,85,.18);box-shadow:0 0 10px rgba(244,191,85,.45); }
     </style>
     <script>
-        window.API_URL = 'http://127.0.0.1:8010';
+        
         @if(session()->has('api_token'))
             localStorage.setItem('token', '{{ session('api_token') }}');
         @endif
