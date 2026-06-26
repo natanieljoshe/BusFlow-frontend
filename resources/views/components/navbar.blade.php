@@ -32,8 +32,8 @@
             <strong class="block mt-1 text-sm">{{ session('user.name') ?? 'Guest User' }}</strong>
             <p class="text-[10px] text-slate-400 mt-0.5">{{ session('user.email') ?? 'guest@busflow.com' }}</p>
             <p class="text-xs text-indigo-300 font-semibold mt-1">{{ ucfirst(session('user.role') ?? 'User') }} Mode</p>
-            <span
-                class="status-dot inline-flex items-center gap-[7px] text-[#86efac] text-xs font-bold uppercase mt-2.5">Active</span>
+            <span id="navbar-status-dot"
+                class="status-dot inline-flex items-center gap-[7px] text-xs font-bold uppercase mt-2.5 text-[#86efac]">Active</span>
         </div>
 
         <nav class="flex-1 shrink-0 pb-4">
@@ -206,6 +206,21 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        const dot = document.getElementById('navbar-status-dot');
+        if (dot) {
+            const statusColor = { aktif: '#86efac', istirahat: '#fde68a', cuti: '#fda4af' };
+            const statusLabel = { aktif: 'Active', istirahat: 'On Break', cuti: 'Day Off' };
+            const s = localStorage.getItem('bf_driver_status') || 'aktif';
+            dot.style.color = statusColor[s] || statusColor.aktif;
+            dot.textContent = statusLabel[s] || statusLabel.aktif;
+
+            window.addEventListener('bf-status-change', (e) => {
+                const ns = e.detail.status;
+                dot.style.color = statusColor[ns] || statusColor.aktif;
+                dot.textContent = statusLabel[ns] || statusLabel.aktif;
+            });
+        }
+
         const btn = document.getElementById('mobile-menu-btn');
         const content = document.getElementById('nav-content');
         const sidebar = document.getElementById('sidebar-nav');

@@ -38,7 +38,7 @@
         .brand-mark { animation:brand-pulse 2.8s ease-in-out infinite; }
         .sidebar    { animation:slide-left .55s ease both; }
         .topbar     { animation:slide-up .5s ease both; }
-        .status-dot::before { content:"";width:7px;height:7px;border-radius:99px;background:var(--lime);box-shadow:0 0 18px var(--lime);animation:pulse-glow 1.8s ease-in-out infinite; }
+        .status-dot::before { content:"";width:7px;height:7px;border-radius:99px;background:currentColor;box-shadow:0 0 18px currentColor;animation:pulse-glow 1.8s ease-in-out infinite; }
         .nav-link:hover .nav-icon, .nav-link.is-active .nav-icon { background:rgba(168,85,247,.28);box-shadow:0 0 12px rgba(168,85,247,.5); }
         .nav-link.is-active,.nav-link:hover { border-color:rgba(168,85,247,.55)!important;background:linear-gradient(90deg,rgba(168,85,247,.15),rgba(34,211,238,.07))!important;color:#fff!important;box-shadow:0 0 18px rgba(168,85,247,.22),inset 0 0 14px rgba(168,85,247,.07); }
     </style>

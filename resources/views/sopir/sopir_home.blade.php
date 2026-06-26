@@ -81,21 +81,24 @@
                     badge: 'Active',
                     desc: 'You are ready to work and receive today\'s assignments.',
                     text: 'Ready to go',
-                    pill: 'Active'
+                    pill: 'Active',
+                    pillClass: 'bg-[rgba(134,239,172,0.14)] text-[#86efac]'
                 },
                 istirahat: {
                     label: 'Rest',
                     badge: 'Rest',
                     desc: 'You are resting and are not receiving assignments right now.',
                     text: 'On break',
-                    pill: 'Rest'
+                    pill: 'Rest',
+                    pillClass: 'bg-[rgba(250,204,21,0.16)] text-[#fde68a]'
                 },
                 cuti: {
                     label: 'Day Off',
                     badge: 'Day Off',
                     desc: 'You are on day off and not active for today\'s tasks.',
                     text: 'On day off',
-                    pill: 'Day Off'
+                    pill: 'Day Off',
+                    pillClass: 'bg-[rgba(248,113,113,0.16)] text-[#fda4af]'
                 }
             };
 
@@ -114,6 +117,8 @@
                 desc.textContent = data.desc;
                 text.textContent = data.text;
                 pill.textContent = data.pill;
+                pill.className = 'inline-flex items-center px-[10px] py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider ' + data.pillClass;
+                window.dispatchEvent(new CustomEvent('bf-status-change', { detail: { status } }));
             }
 
             const saved = localStorage.getItem('bf_driver_status') || 'aktif';
