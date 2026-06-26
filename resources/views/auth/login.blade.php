@@ -5,8 +5,8 @@
 @section('content')
 <div class="bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
     <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 mb-4 shadow-[0_0_20px_rgba(99,102,241,0.5)]">
-            <i class="fa-solid fa-bus text-white text-2xl"></i>
+        <div class="inline-flex items-center justify-center w-24 h-24 mb-2">
+            <img src="{{ asset('assets/logo/logo_fix.png') }}" alt="BusFlow Logo" class="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(99,102,241,0.5)]">
         </div>
         <h2 class="text-2xl font-bold text-white tracking-tight">Welcome to BusFlow</h2>
         <p class="text-sm text-slate-400 mt-1">Sign in to your account</p>
@@ -58,6 +58,24 @@
     <div class="mt-6 text-center">
         <p class="text-sm text-slate-400">New passenger? <a href="{{ route('register') }}" class="text-indigo-400 font-medium hover:text-indigo-300 transition-colors">Create an account</a></p>
     </div>
+
+    <div class="mt-6">
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-slate-700"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-slate-900/60 text-slate-400">Or continue with</span>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <a href="{{ env('API_URL', 'http://127.0.0.1:8010/api') }}/auth/google/redirect" class="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 border border-slate-700 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium text-white transition-colors">
+                <i class="fa-brands fa-google text-red-500"></i>
+                Google
+            </a>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -92,44 +110,20 @@
             submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
 
             try {
-                const response = await fetch(`${window.API_URL}/api/login`, {
+                const response = await fetch("{{ route('local.login') }}", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     body: JSON.stringify({ email, password })
                 });
 
                 const responseData = await response.json();
-                const payload = responseData.data || {};
 
-                if (response.ok && payload.token) {
-                    // Save token
-                    localStorage.setItem('token', payload.token);
-                    
-                    let role = payload.user?.role;
-                    
-                    // If login response doesn't include user details, fetch them
-                    if (!role) {
-                        try {
-                            const userRes = await fetch(`${window.API_URL}/api/me`, {
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'Authorization': `Bearer ${payload.token}`
-                                }
-                            });
-                            if (userRes.ok) {
-                                const userData = await userRes.json();
-                                const userObj = userData.data || userData;
-                                role = userObj.role;
-                            }
-                        } catch (e) {
-                            console.error("Failed to fetch user role", e);
-                        }
-                    }
-                    
-                    role = role || 'passenger'; // fallback default
+                if (response.ok && responseData.status === 'success') {
+                    const role = responseData.role || 'passenger';
                     
                     // Route based on role
                     switch (role) {
@@ -137,13 +131,13 @@
                             window.location.href = "{{ route('admin.dashboard') }}";
                             break;
                         case 'operator':
-                            window.location.href = "/operator";
+                            window.location.href = "{{ route('admin.routes') }}";
                             break;
                         case 'driver':
-                            window.location.href = "/driver";
+                            window.location.href = "{{ route('sopir.home') }}";
                             break;
                         case 'conductor':
-                            window.location.href = "/conductor";
+                            window.location.href = "{{ route('sopir.home') }}";
                             break;
                         case 'passenger':
                         default:

@@ -162,7 +162,7 @@
                     </h3>
                     <p class="text-[10px] sm:text-xs text-slate-400 mt-1">Bus yang mendekati atau melewati jadwal servis berkala</p>
                 </div>
-                <button class="text-[10px] sm:text-xs font-medium px-3 py-1.5 rounded bg-slate-800 text-indigo-400 hover:bg-slate-700 hover:text-indigo-300 transition-colors border border-slate-700">Lihat Semua</button>
+                <a href="{{ route('admin.fleet') }}" class="text-[10px] sm:text-xs font-medium px-3 py-1.5 rounded bg-slate-800 text-indigo-400 hover:bg-slate-700 hover:text-indigo-300 transition-colors border border-slate-700">Lihat Semua</a>
             </div>
             
             <div class="overflow-x-auto">
@@ -389,9 +389,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </span>
                 </td>
                 <td class="px-6 py-4 text-right">
-                    <button onclick="alert('Maintenance action not implemented')" class="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-400 hover:bg-indigo-500/10 hover:text-indigo-400 hover:border-indigo-500/30 transition-colors text-xs font-medium opacity-70 group-hover:opacity-100">
-                        <i class="fa-solid fa-check mr-1"></i> Tandai Selesai
-                    </button>
+                    <a href="/admin/fleet" class="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-400 hover:bg-indigo-500/10 hover:text-indigo-400 hover:border-indigo-500/30 transition-colors text-xs font-medium opacity-70 group-hover:opacity-100 inline-block">
+                        <i class="fa-solid fa-arrow-right mr-1"></i> View in Fleet
+                    </a>
                 </td>
             `;
             tbody.appendChild(tr);

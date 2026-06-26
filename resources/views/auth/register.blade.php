@@ -5,8 +5,8 @@
 @section('content')
 <div class="bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 shadow-[0_0_40px_rgba(0,0,0,0.5)] my-8">
     <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-sky-600 mb-4 shadow-[0_0_20px_rgba(168,85,247,0.5)]">
-            <i class="fa-solid fa-user-plus text-white text-2xl"></i>
+        <div class="inline-flex items-center justify-center w-24 h-24 mb-2">
+            <img src="{{ asset('assets/logo/logo_fix.png') }}" alt="BusFlow Logo" class="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]">
         </div>
         <h2 class="text-2xl font-bold text-white tracking-tight">Join BusFlow</h2>
         <p class="text-sm text-slate-400 mt-1">Register for a passenger account</p>
@@ -73,6 +73,24 @@
     <div class="mt-6 text-center">
         <p class="text-sm text-slate-400">Already have an account? <a href="{{ route('login') }}" class="text-purple-400 font-medium hover:text-purple-300 transition-colors">Sign In</a></p>
     </div>
+
+    <div class="mt-6">
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-slate-700"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-slate-900/60 text-slate-400">Or continue with</span>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <a href="{{ env('API_URL', 'http://127.0.0.1:8010/api') }}/auth/google/redirect" class="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 border border-slate-700 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium text-white transition-colors">
+                <i class="fa-brands fa-google text-red-500"></i>
+                Google
+            </a>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -117,11 +135,12 @@
             submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Registering...';
 
             try {
-                const response = await fetch(`${window.API_URL}/api/register`, {
+                const response = await fetch("{{ route('local.register') }}", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     body: JSON.stringify({ name, email, password, password_confirmation })
                 });
@@ -129,13 +148,30 @@
                 const responseData = await response.json();
                 const payload = responseData.data || {};
 
-                if (response.ok && payload.token) {
-                    // Save token
-                    localStorage.setItem('token', payload.token);
-                    // Redirect to passenger area (root for now)
-                    window.location.href = "/";
+                if (response.ok && responseData.status === 'success') {
+                    const role = responseData.role || 'passenger';
+                    
+                    // Route based on role
+                    switch (role) {
+                        case 'admin':
+                            window.location.href = "{{ route('admin.dashboard') }}";
+                            break;
+                        case 'operator':
+                            window.location.href = "/operator";
+                            break;
+                        case 'driver':
+                            window.location.href = "/driver";
+                            break;
+                        case 'conductor':
+                            window.location.href = "/conductor";
+                            break;
+                        case 'passenger':
+                        default:
+                            window.location.href = "/user";
+                            break;
+                    }
                 } else {
-                    // Show error, handle validation errors from Laravel if present
+                    // Show error
                     let msg = responseData.message || 'Registration failed. Please check your inputs.';
                     if (responseData.errors) {
                         const firstErrorKey = Object.keys(responseData.errors)[0];
