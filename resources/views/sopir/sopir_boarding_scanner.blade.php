@@ -1,8 +1,8 @@
-@extends('admin.layouts.admin')
+@extends('sopir.sopir_layout')
 
 @section('title', 'Boarding Scanner')
-@section('header_title', 'Boarding Scanner')
-@section('header_subtitle', 'Scan passenger QR codes to mark them as boarded')
+@section('page_title', 'Boarding Scanner')
+@section('page_description', 'Scan passenger QR codes to check-in or check-out')
 
 @section('content')
 <div class="flex flex-col gap-6 max-w-3xl mx-auto w-full">
@@ -134,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Kita gunakan API admin untuk tap-in mock
             // Karena tidak ada endpoint khusus token, mari asumsikan kita punya endpoint /api/admin/scanner/tap-in
             // Namun untuk mock ini, kita cukup panggil /api/admin/scanner/tap-in
+            const baseApiUrl = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
             const response = await fetch(`${baseApiUrl}/api/admin/scanner/tap-in`, {
                 method: 'POST',
                 headers: {

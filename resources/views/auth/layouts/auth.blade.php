@@ -30,7 +30,7 @@
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex items-center justify-center relative overflow-hidden bg-[#0b0f19]">
+<body class="antialiased min-h-screen flex items-center justify-center relative overflow-x-hidden bg-[#0b0f19] py-10">
     <!-- Abstract Background Effects -->
     <div class="absolute inset-0 w-full h-full opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
     <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-pulse"></div>

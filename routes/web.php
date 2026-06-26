@@ -39,10 +39,28 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/analytics', function () { return view('admin.analytics'); })->name('analytics');
     Route::get('/boarding-scanner', function () { return view('admin.boarding-scanner'); })->name('boarding-scanner');
     Route::get('/ga-optimizer', function () { return view('admin.ga-optimizer'); })->name('ga-optimizer');
-    Route::get('/ga-results', function () { 
-        $apiUrl = config('services.api.url', 'http://127.0.0.1:8010');
-        $response = Illuminate\Support\Facades\Http::get($apiUrl . '/api/ga-payload');
-        $payload = $response->json() ?? [];
+    Route::get('/ga-results', function (\Illuminate\Http\Request $request) { 
+        $jobId = $request->query('job_id');
+        $payload = [];
+        
+        if ($jobId) {
+            $path = base_path('../bus_flow_backend/BusFlow-backend/storage/app/optimizations/' . $jobId . '.json');
+            if (file_exists($path)) {
+                $statusData = json_decode(file_get_contents($path), true);
+                if (isset($statusData['result'])) {
+                    $payload = $statusData['result'];
+                }
+            }
+        }
+        
+        // Fallback for direct visits
+        if (empty($payload)) {
+            $fallbackPath = base_path('../bus_flow_backend/BusFlow-backend/app/Algorithms/src/payload.JSON');
+            if (file_exists($fallbackPath)) {
+                $payload = json_decode(file_get_contents($fallbackPath), true);
+            }
+        }
+
         return view('admin.ga-results', compact('payload'));
     })->name('ga-results');
 });
@@ -63,4 +81,5 @@ Route::prefix('sopir')->name('sopir.')->group(function () {
     Route::view('/home', 'sopir.sopir_home')->name('home');
     Route::view('/trip-details', 'sopir.sopir_trip_details')->name('trip-details');
     Route::view('/history', 'sopir.sopir_history')->name('history');
+    Route::view('/boarding-scanner', 'sopir.sopir_boarding_scanner')->name('boarding-scanner');
 });

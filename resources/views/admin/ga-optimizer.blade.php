@@ -52,7 +52,7 @@
     <div class="glass-panel w-full rounded-2xl p-8 shadow-2xl">
         
         <!-- JSON MODE FORM -->
-        <form id="form-json" action="{{ route('admin.ga-results') }}" method="GET" class="space-y-6">
+        <form id="form-json" class="space-y-6">
             <div class="mb-4 text-center">
                 <span class="inline-block bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full text-xs font-semibold border border-indigo-500/30">Mode: Mockup / JSON Static Payload</span>
             </div>
@@ -60,15 +60,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2 relative">
                     <label for="route" class="text-sm font-medium text-slate-300">Pilih Rute Bus</label>
-                    <select id="route" name="route" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 outline-none input-glow transition-all duration-300 appearance-none">
-                        <option value="M15+">M15+ (Manhattan Select Bus)</option>
-                        <option value="Q52+">Q52+ (Queens Select Bus)</option>
-                        <option value="BX18B">BX18B (Bronx Local)</option>
-                        <option value="Q114">Q114 (Queens Local)</option>
-                        <option value="M3">M3 (Manhattan Local)</option>
+                    <select id="route" name="route" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-400 outline-none input-glow transition-all duration-300 appearance-none cursor-not-allowed" disabled>
+                        <option value="Q114" selected>Q114 (Queens Local) - Demo Fixed</option>
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400" style="margin-top: 28px;">
-                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                        <i class="fa-solid fa-lock text-xs"></i>
                     </div>
                 </div>
                 
@@ -92,23 +88,25 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                    <label for="fleet_count" class="text-sm font-medium text-slate-300">Jumlah Armada Tersedia</label>
+                    <label for="fleet_count" class="text-sm font-medium text-slate-300">Jumlah Armada Tersedia (Demo)</label>
                     <div class="relative">
-                        <input type="number" id="fleet_count" name="fleet_count" value="10" min="1" max="50" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 pl-10 text-slate-200 outline-none input-glow transition-all duration-300">
+                        <input type="number" id="fleet_count" name="fleet_count" value="10" min="1" max="50" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 pl-10 text-slate-400 outline-none input-glow transition-all duration-300 cursor-not-allowed" readonly>
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <i class="fa-solid fa-bus-simple text-slate-400"></i>
                         </div>
                     </div>
+                    <p class="text-[10px] text-slate-500 mt-1">Nilai diatur otomatis dari file dummy JSON.</p>
                 </div>
                 
                 <div class="space-y-2">
                     <label for="bus_capacity" class="text-sm font-medium text-slate-300">Kapasitas Bus (Penumpang/Bus)</label>
                     <div class="relative">
-                        <input type="number" id="bus_capacity" name="bus_capacity" value="80" min="10" max="150" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 pl-10 text-slate-200 outline-none input-glow transition-all duration-300">
+                        <input type="number" id="bus_capacity" name="bus_capacity" value="80" min="10" max="150" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 pl-10 text-slate-400 outline-none input-glow transition-all duration-300 cursor-not-allowed" readonly>
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <i class="fa-solid fa-users text-slate-400"></i>
                         </div>
                     </div>
+                    <p class="text-[10px] text-slate-500 mt-1">Nilai diatur otomatis dari file dummy JSON.</p>
                 </div>
             </div>
 
@@ -157,14 +155,14 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                    <label for="fleet_count_db" class="text-sm font-medium text-slate-300">Jumlah Armada (Otomatis dari DB)</label>
+                    <label for="fleet_count_db" class="text-sm font-medium text-slate-300">Batas Maksimal Armada</label>
                     <div class="relative">
-                        <input type="number" id="fleet_count_db" name="fleet_count" value="0" min="1" max="50" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 pl-10 text-slate-400 outline-none input-glow transition-all duration-300 cursor-not-allowed" readonly>
+                        <input type="number" id="fleet_count_db" name="fleet_count" min="1" max="50" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 pl-10 text-slate-200 outline-none input-glow transition-all duration-300" required>
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <i class="fa-solid fa-bus-simple text-slate-400"></i>
                         </div>
                     </div>
-                    <p class="text-[10px] text-slate-500 mt-1">Dihitung otomatis berdasarkan rute yang dipilih.</p>
+                    <p id="fleet_helper" class="text-[11px] text-slate-400 mt-1">Total Armada: -, Tersedia: -</p>
                 </div>
                 
                 <div class="space-y-2">
@@ -175,6 +173,30 @@
                             <i class="fa-solid fa-users text-slate-400"></i>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="driver_count_db" class="text-sm font-medium text-slate-300">Batas Maksimal Supir</label>
+                    <div class="relative">
+                        <input type="number" id="driver_count_db" name="driver_count" min="1" max="100" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 pl-10 text-slate-200 outline-none input-glow transition-all duration-300" required>
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-id-card text-slate-400"></i>
+                        </div>
+                    </div>
+                    <p id="driver_helper" class="text-[11px] text-slate-400 mt-1">Total Supir: -, Tersedia: -</p>
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="conductor_count_db" class="text-sm font-medium text-slate-300">Batas Maksimal Kondektur</label>
+                    <div class="relative">
+                        <input type="number" id="conductor_count_db" name="conductor_count" min="1" max="100" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 pl-10 text-slate-200 outline-none input-glow transition-all duration-300" required>
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-ticket text-slate-400"></i>
+                        </div>
+                    </div>
+                    <p id="conductor_helper" class="text-[11px] text-slate-400 mt-1">Total Kondektur: -, Tersedia: -</p>
                 </div>
             </div>
 
@@ -253,11 +275,15 @@
 
         let allRoutes = [];
         let allBuses = [];
+        let allDrivers = [];
+        let allConductors = [];
 
         try {
-            const [routesRes, busesRes] = await Promise.all([
+            const [routesRes, busesRes, driversRes, conductorsRes] = await Promise.all([
                 fetch(`${API_URL}/api/admin/routes`, { headers }),
-                fetch(`${API_URL}/api/admin/buses`, { headers })
+                fetch(`${API_URL}/api/admin/buses`, { headers }),
+                fetch(`${API_URL}/api/admin/drivers`, { headers }),
+                fetch(`${API_URL}/api/admin/conductors`, { headers })
             ]);
 
             if (routesRes.ok) {
@@ -268,9 +294,19 @@
                 const data = await busesRes.json();
                 allBuses = Array.isArray(data) ? data : (data.data || []);
             }
+            if (driversRes.ok) {
+                const data = await driversRes.json();
+                allDrivers = Array.isArray(data) ? data : (data.data || []);
+            }
+            if (conductorsRes.ok) {
+                const data = await conductorsRes.json();
+                allConductors = Array.isArray(data) ? data : (data.data || []);
+            }
             
             if(!Array.isArray(allRoutes)) allRoutes = Object.values(allRoutes);
             if(!Array.isArray(allBuses)) allBuses = Object.values(allBuses);
+            if(!Array.isArray(allDrivers)) allDrivers = Object.values(allDrivers);
+            if(!Array.isArray(allConductors)) allConductors = Object.values(allConductors);
 
             const routeSelect = document.getElementById('route_db');
             routeSelect.innerHTML = '<option value="">-- Pilih Rute --</option>';
@@ -288,22 +324,40 @@
             
             if (!routeId) {
                 document.getElementById('fleet_count_db').value = 0;
+                document.getElementById('driver_count_db').value = 0;
+                document.getElementById('conductor_count_db').value = 0;
+                document.getElementById('fleet_helper').innerText = 'Total Armada: -, Tersedia: -';
+                document.getElementById('driver_helper').innerText = 'Total Supir: -, Tersedia: -';
+                document.getElementById('conductor_helper').innerText = 'Total Kondektur: -, Tersedia: -';
                 btn.disabled = true;
                 return;
             }
 
-            const routeBuses = allBuses.filter(b => b.route_id == routeId);
-            document.getElementById('fleet_count_db').value = routeBuses.length;
+            // Calculate availabilities
+            const getAvailable = (items) => items.filter(i => !i.route_id || String(i.route_id) === String(routeId)).length;
+            
+            const availBuses = getAvailable(allBuses);
+            const availDrivers = getAvailable(allDrivers);
+            const availConductors = getAvailable(allConductors);
 
-            if (routeBuses.length === 0) {
-                alert('Tidak ada armada bus yang di-assign ke rute ini.');
-                btn.disabled = true;
-            } else {
+            document.getElementById('fleet_count_db').value = availBuses;
+            document.getElementById('driver_count_db').value = availDrivers;
+            document.getElementById('conductor_count_db').value = availConductors;
+            
+            document.getElementById('fleet_helper').innerText = `Total Armada: ${allBuses.length} | Tersedia: ${availBuses} (Belum ditugaskan / milik rute ini)`;
+            document.getElementById('driver_helper').innerText = `Total Supir: ${allDrivers.length} | Tersedia: ${availDrivers} (Belum ditugaskan / milik rute ini)`;
+            document.getElementById('conductor_helper').innerText = `Total Kondektur: ${allConductors.length} | Tersedia: ${availConductors} (Belum ditugaskan / milik rute ini)`;
+
+            const routeBuses = allBuses.filter(b => String(b.route_id) === String(routeId));
+            if (routeBuses.length > 0) {
                 let totalCap = 0;
                 routeBuses.forEach(b => totalCap += (b.capacity || 0));
                 document.getElementById('bus_capacity_db').value = Math.round(totalCap / routeBuses.length) || 80;
-                btn.disabled = false;
+            } else {
+                document.getElementById('bus_capacity_db').value = 80; // default
             }
+            
+            btn.disabled = false;
         });
         
         let pollingInterval = null;
@@ -354,7 +408,7 @@
                         hideModal();
                         localStorage.removeItem('running_job_id');
                         alert('Sukses: ' + data.message + '\n\nMengarahkan ke halaman hasil optimasi...');
-                        window.location.href = '/admin/ga-results';
+                        window.location.href = '/admin/ga-results?job_id=' + jobId;
                     } else if (data.status === 'error') {
                         hideModal();
                         localStorage.removeItem('running_job_id');
@@ -418,7 +472,10 @@
                         start_time: document.getElementById('start_time_db').value,
                         end_time: document.getElementById('end_time_db').value,
                         fleet_count: document.getElementById('fleet_count_db').value,
-                        bus_capacity: document.getElementById('bus_capacity_db').value
+                        driver_count: document.getElementById('driver_count_db').value,
+                        conductor_count: document.getElementById('conductor_count_db').value,
+                        bus_capacity: document.getElementById('bus_capacity_db').value,
+                        mode: 'live'
                     })
                 });
 
@@ -428,6 +485,38 @@
                 } else {
                     const err = await response.json();
                     alert('Gagal memulai optimasi: ' + (err.message || 'Error') + '\n\n' + (err.error || ''));
+                }
+            } catch (error) {
+                alert('Gagal terhubung ke server Backend.');
+            }
+        });
+
+        document.getElementById('form-json').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const response = await fetch(`${API_URL}/api/admin/schedules/generate`, {
+                    method: 'POST',
+                    headers: { ...headers, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        route: 'Q114',
+                        date: document.getElementById('date').value,
+                        start_time: document.getElementById('start_time').value,
+                        end_time: document.getElementById('end_time').value,
+                        fleet_count: document.getElementById('fleet_count').value,
+                        driver_count: document.getElementById('fleet_count').value, // dummy
+                        conductor_count: document.getElementById('fleet_count').value, // dummy
+                        bus_capacity: document.getElementById('bus_capacity').value,
+                        mode: 'demo'
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    startPolling(data.job_id);
+                } else {
+                    const err = await response.json();
+                    alert('Gagal memulai optimasi Demo: ' + (err.message || 'Error') + '\n\n' + (err.error || ''));
                 }
             } catch (error) {
                 alert('Gagal terhubung ke server Backend.');
