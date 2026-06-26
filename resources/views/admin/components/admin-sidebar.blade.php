@@ -4,7 +4,7 @@
 
 <aside id="sidebar"
     class="fixed md:static inset-y-0 left-0 w-64 bg-[#0f172a] border-r border-slate-800 flex-col justify-between z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex">
-    <div>
+    <div class="flex-1 overflow-y-auto">
         <div class="h-16 flex items-center px-6 border-b border-slate-800">
             <!-- Logo -->
             <div class="flex items-center gap-2">
@@ -60,12 +60,6 @@
                     <span class="font-medium text-sm">Users & RBAC</span>
                 </a>
 
-                <a href="{{ route('admin.schedule') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.schedule') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' }}">
-                    <i class="fa-solid fa-calendar-alt w-5 text-center"></i>
-                    <span class="font-medium text-sm">AI Optimizer (Integrated)</span>
-                </a>
-
                 <a href="{{ route('admin.analytics') }}"
                     class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.analytics') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' }}">
                     <i class="fa-solid fa-chart-line w-5 text-center"></i>
@@ -88,11 +82,6 @@
     </div>
 
     <div class="p-4 space-y-3">
-        <button onclick="alert('Emergency system engaged. All services paused.')"
-            class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors text-sm font-medium">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            Emergency Override
-        </button>
         <a href="#" onclick="handleLogout(event)"
             class="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors text-sm font-medium">
             <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>

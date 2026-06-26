@@ -5,10 +5,10 @@
 @section('page_description', 'Scan this barcode at the bus stop to Check-in and Check-out. Fares are automatically deducted from your wallet.')
 
 @section('content')
-<div class="grid gap-6 lg:grid-cols-[1fr_350px]">
+<div class="grid gap-6 lg:grid-cols-[1fr_350px] items-start">
     
     <!-- Barcode & Status Section -->
-    <section class="border border-violet-500/[0.22] rounded-xl bg-[rgba(4,5,15,0.96)] shadow-[0_8px_40px_rgba(0,0,0,0.7),0_0_0_1px_rgba(168,85,247,0.08)] backdrop-blur-2xl overflow-hidden p-[30px] flex flex-col items-center justify-center min-h-[400px]">
+    <section class="sticky top-[100px] border border-violet-500/[0.22] rounded-xl bg-[rgba(4,5,15,0.96)] shadow-[0_8px_40px_rgba(0,0,0,0.7),0_0_0_1px_rgba(168,85,247,0.08)] backdrop-blur-2xl overflow-hidden p-[30px] flex flex-col items-center justify-center min-h-[400px]">
         
         <div class="text-center mb-8">
             <h3 class="text-2xl font-bold text-[#c084fc] mb-2">Scan to Travel</h3>

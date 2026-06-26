@@ -144,21 +144,19 @@
                     btn.disabled = true;
                     resultBox.classList.add('hidden');
 
-                    try {
-                        // Kita gunakan API admin untuk tap-in mock
-                        // Karena tidak ada endpoint khusus token, mari asumsikan kita punya endpoint /api/admin/scanner/tap-in
-                        // Namun untuk mock ini, kita cukup panggil /api/admin/scanner/tap-in
-                        const response = await fetch(`${baseApiUrl}/api/admin/scanner/tap-in`, {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                token: token
-                            })
-                        });
+        try {
+            // Kita gunakan API admin untuk tap-in mock
+            // Karena tidak ada endpoint khusus token, mari asumsikan kita punya endpoint /api/admin/scanner/tap-in
+            // Namun untuk mock ini, kita cukup panggil /api/admin/scanner/tap-in
+            const response = await fetch(`${baseApiUrl}/api/admin/scanner/tap-in`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ token: token })
+            });
 
                         const data = await response.json();
 

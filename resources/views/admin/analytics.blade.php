@@ -1,75 +1,67 @@
 @extends('admin.layouts.admin')
 
-@section('title', 'Analytics')
-@section('header_title', 'Predictive Analytics')
-@section('header_subtitle', 'Machine learning passenger volume predictions & insights')
+@section('title', 'System Analytics - BusFlow')
+@section('page_title', 'System Analytics')
 
 @section('content')
-<div class="flex flex-col gap-6">
-
-    <!-- Key Metrics Row -->
+<div class="space-y-6">
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <!-- Metric 1 -->
         <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-5 shadow-lg">
-            <h4 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">Total Passengers (Today)</h4>
+            <h4 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">Total Buses</h4>
             <div class="flex items-end gap-3">
-                <span class="text-sm font-medium text-slate-500 italic"><i class="fa-solid fa-hourglass-half text-xs"></i> Menunggu ML</span>
+                <span class="text-3xl font-bold text-white" id="stat-buses">...</span>
+                <i class="fa-solid fa-bus text-indigo-400 mb-1"></i>
             </div>
         </div>
         <!-- Metric 2 -->
         <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-5 shadow-lg">
-            <h4 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">Predicted Peak Hour</h4>
+            <h4 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">Total Drivers</h4>
             <div class="flex items-end gap-3">
-                <span class="text-sm font-medium text-slate-500 italic"><i class="fa-solid fa-hourglass-half text-xs"></i> Menunggu ML</span>
+                <span class="text-3xl font-bold text-white" id="stat-drivers">...</span>
+                <i class="fa-solid fa-id-card text-emerald-400 mb-1"></i>
             </div>
         </div>
         <!-- Metric 3 -->
         <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-5 shadow-lg">
-            <h4 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">Route Efficiency</h4>
+            <h4 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">Total Passengers</h4>
             <div class="flex items-end gap-3">
-                <span class="text-sm font-medium text-slate-500 italic"><i class="fa-solid fa-hourglass-half text-xs"></i> Menunggu ML</span>
+                <span class="text-3xl font-bold text-white" id="stat-passengers">...</span>
+                <i class="fa-solid fa-users text-amber-400 mb-1"></i>
             </div>
         </div>
         <!-- Metric 4 -->
         <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-5 shadow-lg">
-            <h4 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">ML Model Accuracy</h4>
+            <h4 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">Total Routes</h4>
             <div class="flex items-end gap-3">
-                <span class="text-sm font-medium text-slate-500 italic"><i class="fa-solid fa-hourglass-half text-xs"></i> Menunggu ML</span>
+                <span class="text-3xl font-bold text-white" id="stat-routes">...</span>
+                <i class="fa-solid fa-route text-rose-400 mb-1"></i>
             </div>
         </div>
     </div>
 
     <!-- Charts Row -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Bus Status Chart -->
+        <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-4 sm:p-6 shadow-lg">
+            <div class="flex justify-between items-start mb-6">
+                <h3 class="text-base sm:text-lg font-semibold text-slate-200">Bus Status Overview</h3>
+            </div>
+            <div class="h-64 sm:h-72 w-full relative">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
         
-        <!-- Main Passenger Prediction Chart -->
+        <!-- Routes Chart -->
         <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-4 sm:p-6 shadow-lg">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-6">
-                <h3 class="text-base sm:text-lg font-semibold text-slate-200">24H Passenger Volume Prediction</h3>
-                <select class="bg-slate-800/50 border border-slate-700 text-slate-300 text-xs rounded focus:ring-indigo-500 focus:border-indigo-500 block p-1.5 outline-none">
-                    <option>Today</option>
-                    <option>Tomorrow</option>
-                    <option>Next 7 Days</option>
-                </select>
+            <div class="flex justify-between items-start mb-6">
+                <h3 class="text-base sm:text-lg font-semibold text-slate-200">Routes Overview</h3>
             </div>
             <div class="h-64 sm:h-72 w-full relative">
-                <canvas id="predictionChart"></canvas>
+                <canvas id="routeChart"></canvas>
             </div>
         </div>
-
-        <!-- Fleet Utilization Chart -->
-        <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-4 sm:p-6 shadow-lg">
-            <div class="flex justify-between items-start sm:items-center gap-3 sm:gap-0 mb-6">
-                <h3 class="text-base sm:text-lg font-semibold text-slate-200">Corridor Load Factor</h3>
-                <button class="text-slate-400 hover:text-white transition-colors"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-            </div>
-            <div class="h-64 sm:h-72 w-full relative">
-                <canvas id="loadFactorChart"></canvas>
-            </div>
-        </div>
-
     </div>
-
 </div>
 
 @push('scripts')
@@ -88,10 +80,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function fetchWithAuth(endpoint) {
         try {
             const response = await fetch(`${API_URL}${endpoint}`, { headers });
-            if (response.status === 401) {
-                localStorage.removeItem('token');
-                return [];
-            }
             if (!response.ok) return [];
             const data = await response.json();
             return Array.isArray(data) ? data : (data.data || []);
@@ -101,7 +89,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    // Shared Chart Configs
     Chart.defaults.color = '#94a3b8';
     Chart.defaults.font.family = "'Inter', sans-serif";
     
@@ -109,116 +96,74 @@ document.addEventListener('DOMContentLoaded', async function() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { labels: { color: '#cbd5e1', font: { size: 12 } } },
-            tooltip: {
-                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                titleColor: '#f1f5f9',
-                bodyColor: '#cbd5e1',
-                borderColor: 'rgba(99, 102, 241, 0.3)',
-                borderWidth: 1,
-                padding: 12
-            }
-        },
-        scales: {
-            x: { grid: { color: 'rgba(51, 65, 85, 0.3)', drawBorder: false } },
-            y: { grid: { color: 'rgba(51, 65, 85, 0.3)', drawBorder: false } }
+            legend: { labels: { color: '#cbd5e1', font: { size: 12 } } }
         }
     };
 
-    // Initialize charts empty first
-    const ctxPred = document.getElementById('predictionChart').getContext('2d');
-    const gradActual = ctxPred.createLinearGradient(0, 0, 0, 400);
-    gradActual.addColorStop(0, 'rgba(168, 85, 247, 0.5)');
-    gradActual.addColorStop(1, 'rgba(168, 85, 247, 0.0)');
-    const gradPredict = ctxPred.createLinearGradient(0, 0, 0, 400);
-    gradPredict.addColorStop(0, 'rgba(99, 102, 241, 0.2)');
-    gradPredict.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
-
-    const predChart = new Chart(ctxPred, {
-        type: 'line',
+    // Initialize Empty Charts
+    const ctxStatus = document.getElementById('statusChart').getContext('2d');
+    const statusChart = new Chart(ctxStatus, {
+        type: 'doughnut',
         data: {
-            labels: ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
-            datasets: [
-                {
-                    label: 'Actual Volume',
-                    data: [],
-                    borderColor: '#c084fc',
-                    backgroundColor: gradActual,
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#1e293b',
-                    pointBorderColor: '#c084fc'
-                },
-                {
-                    label: 'ML Prediction',
-                    data: [],
-                    borderColor: '#818cf8',
-                    backgroundColor: gradPredict,
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 0,
-                    pointHoverRadius: 6
-                }
-            ]
+            labels: ['Active', 'Inactive'],
+            datasets: [{
+                data: [0, 0],
+                backgroundColor: ['#34d399', '#f87171'],
+                borderWidth: 0
+            }]
         },
-        options: commonOptions
+        options: { ...commonOptions, cutout: '70%' }
     });
 
-    const ctxLoad = document.getElementById('loadFactorChart').getContext('2d');
-    const loadChart = new Chart(ctxLoad, {
+    const ctxRoute = document.getElementById('routeChart').getContext('2d');
+    const routeChart = new Chart(ctxRoute, {
         type: 'bar',
         data: {
             labels: [],
             datasets: [{
-                label: 'Load Factor (%)',
+                label: 'Routes (Count)',
                 data: [],
-                backgroundColor: [],
-                borderRadius: 4,
-                barPercentage: 0.6
+                backgroundColor: '#818cf8',
+                borderRadius: 4
             }]
         },
         options: {
             ...commonOptions,
-            plugins: { ...commonOptions.plugins, legend: { display: false } }
+            plugins: { ...commonOptions.plugins, legend: { display: false } },
+            scales: {
+                x: { grid: { color: 'rgba(51, 65, 85, 0.3)', drawBorder: false } },
+                y: { grid: { color: 'rgba(51, 65, 85, 0.3)', drawBorder: false } }
+            }
         }
     });
 
-    // Fetch data and update
-    const [routes, trips] = await Promise.all([
-        fetchWithAuth('/api/admin/routes'),
-        fetchWithAuth('/api/admin/trips')
+    // Fetch Data
+    const [buses, drivers, users, routes] = await Promise.all([
+        fetchWithAuth('/api/admin/buses'),
+        fetchWithAuth('/api/admin/drivers'),
+        fetchWithAuth('/api/admin/users'),
+        fetchWithAuth('/api/admin/routes')
     ]);
 
-    // Menghapus data mock sementara menunggu API ML Python
-    if (routes && routes.length > 0) {
-        loadChart.data.labels = routes.map(r => r.name || `R-${r.id}`);
-        loadChart.data.datasets[0].data = [];
-        loadChart.update();
-    }
-    
-    predChart.data.datasets[0].data = [];
-    predChart.data.datasets[1].data = [];
-    predChart.update();
+    // Update Stats
+    const passengers = users.filter(u => u.role === 'passenger');
+    document.getElementById('stat-buses').innerText = buses.length;
+    document.getElementById('stat-drivers').innerText = drivers.length;
+    document.getElementById('stat-passengers').innerText = passengers.length;
+    document.getElementById('stat-routes').innerText = routes.length;
 
-    // Add Overlay for both charts
-    const overlayHtml = '<i class="fa-solid fa-hourglass-half text-3xl text-indigo-400 mb-3 animate-pulse"></i><p class="text-slate-300 font-medium text-sm">Menunggu Model ML (Python)</p>';
-    
-    const predContainer = document.getElementById('predictionChart').parentElement;
-    const overlayPred = document.createElement('div');
-    overlayPred.className = 'absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-sm z-10 rounded-lg';
-    overlayPred.innerHTML = overlayHtml;
-    predContainer.appendChild(overlayPred);
+    // Update Status Chart
+    const activeBuses = buses.filter(b => b.status).length;
+    const inactiveBuses = buses.length - activeBuses;
+    statusChart.data.datasets[0].data = [activeBuses, inactiveBuses];
+    statusChart.update();
 
-    const loadContainer = document.getElementById('loadFactorChart').parentElement;
-    const overlayLoad = document.createElement('div');
-    overlayLoad.className = 'absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-sm z-10 rounded-lg';
-    overlayLoad.innerHTML = overlayHtml;
-    loadContainer.appendChild(overlayLoad);
+    // Update Route Chart
+    routeChart.data.labels = routes.map(r => r.name || r.code);
+    routeChart.data.datasets[0].data = routes.map(() => 1); // Just showing routes for now
+    routeChart.update();
 });
 </script>
 @endpush
 @endsection
+

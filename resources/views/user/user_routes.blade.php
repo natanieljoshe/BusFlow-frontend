@@ -23,8 +23,19 @@
                     <label for="destination" class="text-[#b8c8e8] text-xs font-extrabold uppercase">Destination</label>
                     <input class="w-full border border-violet-500/25 rounded-lg text-[#eef4ff] bg-[rgba(4,5,15,0.98)] outline-none transition-all duration-200 h-11 px-[13px] focus:border-violet-500/70 focus:shadow-[0_0_0_3px_rgba(168,85,247,0.14)]" id="destination" name="destination" type="text" value="{{ request('destination') }}" placeholder="Enter destination stop/location">
                 </div>
-                <button class="inline-flex items-center justify-center gap-[7px] h-11 px-6 rounded-lg text-xs font-extrabold cursor-pointer tracking-wider uppercase relative overflow-hidden transition-all duration-[250ms] no-underline bg-cyan-400/[0.08] border border-cyan-400/50 text-[#22d3ee] hover:bg-cyan-400/[0.16] hover:border-cyan-400 hover:text-white hover:shadow-[0_0_18px_rgba(34,211,238,0.4),inset_0_0_12px_rgba(34,211,238,0.08)]" type="submit">Search</button>
+                <div class="flex items-center gap-3">
+                    <button class="flex-1 inline-flex items-center justify-center gap-[7px] h-11 px-6 rounded-lg text-xs font-extrabold cursor-pointer tracking-wider uppercase relative overflow-hidden transition-all duration-[250ms] no-underline bg-cyan-400/[0.08] border border-cyan-400/50 text-[#22d3ee] hover:bg-cyan-400/[0.16] hover:border-cyan-400 hover:text-white hover:shadow-[0_0_18px_rgba(34,211,238,0.4),inset_0_0_12px_rgba(34,211,238,0.08)]" type="submit">Search</button>
+                    @if(request('origin') || request('destination'))
+                        <a href="{{ route('user.routes') }}" class="inline-flex items-center justify-center h-11 px-6 rounded-lg text-xs font-extrabold cursor-pointer tracking-wider uppercase transition-all duration-[250ms] no-underline bg-rose-500/10 border border-rose-500/40 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500 hover:text-white" title="Clear Filter">Clear</a>
+                    @endif
+                </div>
             </form>
+
+            <!-- Map Section -->
+            <div class="mb-8">
+                <div class="text-[#7a8aaa] text-xs mb-4 font-extrabold tracking-widest uppercase">Network Map</div>
+                <div id="routes-map" class="w-full h-[400px] rounded-[10px] border border-violet-500/20 z-10 relative shadow-[0_0_20px_rgba(168,85,247,0.1)]"></div>
+            </div>
 
             <div>
                 <div class="text-[#7a8aaa] text-xs mb-4 font-extrabold tracking-widest uppercase">Available Routes</div>
@@ -63,4 +74,58 @@
             </div>
         </div>
     </section>
+
+    <!-- Leaflet JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Default center to New York
+            const map = L.map('routes-map').setView([40.7128, -74.0060], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Fetch routes data to render on map
+            const routes = @json($routes);
+            const bounds = L.latLngBounds();
+
+            if(routes && routes.length > 0) {
+                const colors = ['#86efac', '#22d3ee', '#c084fc', '#f4bf55', '#fb7185'];
+                let hasMarkers = false;
+
+                routes.forEach((route, index) => {
+                    const color = colors[index % colors.length];
+                    const haltes = route.haltes || [];
+                    const latlngs = [];
+                    
+                    haltes.forEach(halte => {
+                        if(halte.latitude && halte.longitude) {
+                            const ll = [halte.latitude, halte.longitude];
+                            latlngs.push(ll);
+                            bounds.extend(ll);
+                            hasMarkers = true;
+                            
+                            L.circleMarker(ll, {
+                                radius: 6,
+                                fillColor: color,
+                                color: '#04050f',
+                                weight: 2,
+                                fillOpacity: 1
+                            }).addTo(map)
+                            .bindPopup(`<b>Halte ${halte.name}</b><br>Rute: ${route.name}`);
+                        }
+                    });
+
+                    if(latlngs.length > 1) {
+                        L.polyline(latlngs, {color: color, weight: 4, opacity: 0.7}).addTo(map);
+                    }
+                });
+
+                if (hasMarkers) {
+                    map.fitBounds(bounds, { padding: [30, 30] });
+                }
+            }
+        });
+    </script>
 @endsection

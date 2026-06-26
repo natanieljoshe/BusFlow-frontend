@@ -53,6 +53,14 @@
                     return;
                 }
                 
+                // Fetch current position from DB
+                const posRes = await fetch(`${API_URL}/api/current-position`);
+                let currentHalteId = null;
+                if (posRes.ok) {
+                    const posData = await posRes.json();
+                    currentHalteId = posData.current_halte_id;
+                }
+
                 container.innerHTML = '';
                 
                 // Sort haltes by sequence
@@ -66,6 +74,11 @@
                     if (isStart) badge = '<span class="inline-flex items-center px-[10px] py-1.5 rounded-full bg-[rgba(134,239,172,0.14)] text-[#86efac] text-[11px] font-bold uppercase tracking-wider">Start</span>';
                     if (isFinish) badge = '<span class="inline-flex items-center px-[10px] py-1.5 rounded-full bg-[rgba(134,239,172,0.14)] text-[#86efac] text-[11px] font-bold uppercase tracking-wider">Finish</span>';
 
+                    const isHere = currentHalteId == halte.id;
+                    const btnClass = isHere ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-indigo-600 hover:bg-indigo-500';
+                    const btnText = isHere ? 'Bus is Here' : "I'm Here";
+                    const disabled = isHere ? 'disabled' : '';
+
                     container.innerHTML += `
                         <div class="flex justify-between items-center gap-[10px] p-[12px_14px] rounded-xl bg-[rgba(4,5,15,0.65)] border border-[rgba(148,163,184,0.08)]">
                             <div>
@@ -74,7 +87,7 @@
                             </div>
                             <div class="flex items-center gap-3">
                                 ${badge}
-                                <button onclick="imHere(${halte.id}, this)" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded shadow transition-colors im-here-btn">I'm Here</button>
+                                <button onclick="imHere(${halte.id}, this)" class="px-3 py-1.5 ${btnClass} text-white text-xs font-bold rounded shadow transition-colors im-here-btn" ${disabled}>${btnText}</button>
                             </div>
                         </div>
                     `;

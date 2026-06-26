@@ -138,12 +138,12 @@
                 </div>
             </div>
 
-            <div class="mt-8">
+            {{-- <div class="mt-8">
                 <a href="{{ route('admin.schedule') }}" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl transition-all duration-300 text-sm font-medium shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] transform hover:-translate-y-0.5 group">
                     <span>Lihat Detail Jadwal</span> 
                     <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
                 </a>
-            </div>
+            </div> --}}
         </div>
     </div>
 
