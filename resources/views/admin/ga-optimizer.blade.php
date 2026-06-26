@@ -186,6 +186,29 @@
             </div>
         </form>
     </div>
+
+    <!-- Progress Modal Overlay -->
+    <div id="progress-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="glass-panel max-w-md w-full p-8 rounded-2xl shadow-2xl mx-4 text-center border border-slate-700">
+            <h3 class="text-xl font-bold text-white mb-2">Memproses Optimasi AI</h3>
+            <p id="progress-message" class="text-sm text-slate-400 mb-6">Memuat model AI...</p>
+            
+            <div class="w-full bg-slate-800 rounded-full h-4 mb-4 overflow-hidden border border-slate-700">
+                <div id="progress-bar" class="bg-indigo-500 h-4 rounded-full transition-all duration-300 relative" style="width: 0%">
+                    <div class="absolute inset-0 bg-white/20 w-full animate-pulse"></div>
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center mb-6">
+                {{-- <span class="text-xs text-slate-500 font-medium">Proses ini berjalan di background</span> --}}
+                <span id="progress-text" class="text-sm font-bold text-indigo-400">0%</span>
+            </div>
+            
+            <button type="button" id="btn-cancel-job" class="text-sm text-red-400 hover:text-red-300 border border-red-500/30 hover:bg-red-500/10 px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-2">
+                <i class="fa-solid fa-times"></i> Batalkan Proses
+            </button>
+        </div>
+    </div>
 </div>
 
 @push('scripts')
@@ -283,14 +306,108 @@
             }
         });
         
+        let pollingInterval = null;
+        let currentJobId = null;
+
+        const modal = document.getElementById('progress-modal');
+        const progressMessage = document.getElementById('progress-message');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const btnCancel = document.getElementById('btn-cancel-job');
+
+        function showModal(message = 'Memulai proses...') {
+            modal.classList.remove('hidden');
+            progressMessage.innerText = message;
+            progressBar.style.width = '0%';
+            progressText.innerText = '0%';
+        }
+
+        function hideModal() {
+            modal.classList.add('hidden');
+            if (pollingInterval) clearInterval(pollingInterval);
+        }
+
+        function startPolling(jobId) {
+            currentJobId = jobId;
+            localStorage.setItem('running_job_id', jobId);
+            showModal();
+
+            pollingInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`${API_URL}/api/admin/schedules/status/${jobId}`, { headers });
+                    if (!res.ok) return;
+                    
+                    const data = await res.json();
+                    
+                    if (data.status === 'not_found') {
+                        hideModal();
+                        localStorage.removeItem('running_job_id');
+                        alert('Job tidak ditemukan atau sudah kadaluarsa.');
+                        return;
+                    }
+
+                    progressMessage.innerText = data.message || 'Memproses...';
+                    progressBar.style.width = (data.progress || 0) + '%';
+                    progressText.innerText = (data.progress || 0) + '%';
+
+                    if (data.status === 'completed') {
+                        hideModal();
+                        localStorage.removeItem('running_job_id');
+                        alert('Sukses: ' + data.message + '\n\nMengarahkan ke halaman hasil optimasi...');
+                        window.location.href = '/admin/ga-results';
+                    } else if (data.status === 'error') {
+                        hideModal();
+                        localStorage.removeItem('running_job_id');
+                        alert('Gagal menjalankan optimasi: \n\n' + (data.error || 'Unknown error'));
+                    } else if (data.status === 'cancelled') {
+                        hideModal();
+                        localStorage.removeItem('running_job_id');
+                        alert('Proses optimasi dibatalkan.');
+                    }
+                } catch (e) {
+                    console.error('Polling error', e);
+                }
+            }, 1000); // poll every 1 second
+        }
+
+        // Check for existing running job when page loads
+        const savedJobId = localStorage.getItem('running_job_id');
+        if (savedJobId) {
+            // Check status once to ensure it's still running before resuming poll
+            fetch(`${API_URL}/api/admin/schedules/status/${savedJobId}`, { headers })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'running') {
+                        startPolling(savedJobId);
+                    } else {
+                        localStorage.removeItem('running_job_id');
+                    }
+                }).catch(e => localStorage.removeItem('running_job_id'));
+        }
+
+        btnCancel.addEventListener('click', async () => {
+            if (!currentJobId) return;
+            const confirmCancel = confirm("Yakin ingin membatalkan proses optimasi yang sedang berjalan?");
+            if (!confirmCancel) return;
+            
+            btnCancel.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Membatalkan...';
+            btnCancel.disabled = true;
+
+            try {
+                await fetch(`${API_URL}/api/admin/schedules/cancel/${currentJobId}`, { 
+                    method: 'POST', 
+                    headers 
+                });
+            } catch(e) {}
+            
+            btnCancel.innerHTML = '<i class="fa-solid fa-times"></i> Batalkan Proses';
+            btnCancel.disabled = false;
+        });
+        
         document.getElementById('form-db').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-submit-db');
-            const originalHtml = btn.innerHTML;
             
-            btn.innerHTML = '<span>Menjalankan Optimasi...</span><i class="fa-solid fa-spinner fa-spin"></i>';
-            btn.disabled = true;
-
             try {
                 const response = await fetch(`${API_URL}/api/admin/schedules/generate`, {
                     method: 'POST',
@@ -307,17 +424,13 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    alert('Sukses: ' + data.message + '\n\nMengarahkan ke halaman hasil optimasi...');
-                    window.location.href = '/admin/ga-results';
+                    startPolling(data.job_id);
                 } else {
                     const err = await response.json();
-                    alert('Gagal menjalankan optimasi: ' + (err.message || 'Error'));
+                    alert('Gagal memulai optimasi: ' + (err.message || 'Error') + '\n\n' + (err.error || ''));
                 }
             } catch (error) {
                 alert('Gagal terhubung ke server Backend.');
-            } finally {
-                btn.innerHTML = originalHtml;
-                btn.disabled = false;
             }
         });
 
