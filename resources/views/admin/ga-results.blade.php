@@ -27,6 +27,9 @@
 @php
     $routeParam = request('route', 'M15+');
     $dateParam = request('date', '2024-07-15');
+    if (isset($payload['schedule_data']['date'])) {
+        $dateParam = $payload['schedule_data']['date'];
+    }
     $dateStr = \Carbon\Carbon::parse($dateParam)->isoFormat('dddd, D MMMM Y');
     
     // Find stops for map based on payload.JSON
@@ -36,6 +39,13 @@
         if($hasRoute) $targetRouteForMap = $routeParam;
     }
     $stops = collect($payload['route_stops'] ?? [])->where('route_id', $targetRouteForMap)->values()->toJson();
+
+    // Recommendation counts
+    $trips = $payload['trips'] ?? [];
+    $uniqueBuses = count(array_unique(array_column($trips, 'bus_id')));
+    $uniqueDrivers = count(array_unique(array_column($trips, 'driver_id')));
+    $uniqueConductors = count(array_unique(array_column($trips, 'conductor_id')));
+    $totalPenalty = $payload['schedule_data']['total_penalty'] ?? 0;
 @endphp
 
 <div class="space-y-8 max-w-7xl mx-auto pb-12">
@@ -79,39 +89,37 @@
                 </div>
             </div>
 
-            <!-- Efisiensi -->
+            <!-- Efisiensi & Rekomendasi -->
             <div class="glass-card p-6">
                 <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-4">
-                    <div class="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg"><i class="fa-solid fa-leaf"></i></div>
-                    <h2 class="text-lg font-bold text-white">Ringkasan Efisiensi</h2>
+                    <div class="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg"><i class="fa-solid fa-lightbulb"></i></div>
+                    <h2 class="text-lg font-bold text-white">Rekomendasi Kebutuhan Rute AI</h2>
                 </div>
                 
                 <div class="space-y-6">
-                    <div>
-                        <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Sebelum Optimasi (Konvensional)</h3>
-                        <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-800 flex items-center gap-3 text-slate-300">
-                            <i class="fa-solid fa-clock-rotate-left text-slate-500"></i>
-                            <p>Headway tetap <strong>15 menit</strong> sepanjang hari tanpa mempedulikan fluktuasi demand.</p>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <h3 class="text-sm font-semibold text-indigo-400 uppercase tracking-wider mb-2">Sesudah Optimasi (Genetic Algorithm)</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                            <div class="bg-slate-900/50 rounded-lg p-4 border border-indigo-500/30 text-center">
-                                <div class="text-indigo-400 text-2xl mb-1"><i class="fa-solid fa-users"></i></div>
-                                <div class="text-2xl font-bold text-white">+23%</div>
-                                <div class="text-xs text-slate-400">Penumpang Terlayani</div>
+                    <div class="bg-slate-900/50 rounded-lg p-4 border border-indigo-500/30">
+                        <p class="text-sm text-slate-300 mb-4">Berdasarkan hasil optimasi, rute ini hanya membutuhkan sumber daya berikut untuk beroperasi secara maksimal tanpa penundaan:</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700">
+                                <div class="text-amber-400 text-3xl mb-2"><i class="fa-solid fa-bus"></i></div>
+                                <div class="text-3xl font-bold text-white">{{ $uniqueBuses > 0 ? $uniqueBuses : '-' }}</div>
+                                <div class="text-sm text-slate-400 mt-1">Armada Bus</div>
                             </div>
-                            <div class="bg-slate-900/50 rounded-lg p-4 border border-emerald-500/30 text-center">
-                                <div class="text-emerald-400 text-2xl mb-1"><i class="fa-solid fa-gas-pump"></i></div>
-                                <div class="text-2xl font-bold text-white">+15%</div>
-                                <div class="text-xs text-slate-400">Efisiensi BBM</div>
+                            <div class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700">
+                                <div class="text-blue-400 text-3xl mb-2"><i class="fa-solid fa-user-tie"></i></div>
+                                <div class="text-3xl font-bold text-white">{{ $uniqueDrivers > 0 ? $uniqueDrivers : '-' }}</div>
+                                <div class="text-sm text-slate-400 mt-1">Supir</div>
                             </div>
-                            <div class="bg-slate-900/50 rounded-lg p-4 border border-amber-500/30 text-center">
-                                <div class="text-amber-400 text-2xl mb-1"><i class="fa-solid fa-bus"></i></div>
-                                <div class="text-2xl font-bold text-white">8/10</div>
-                                <div class="text-xs text-slate-400">Armada Terpakai</div>
+                            <div class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700">
+                                <div class="text-emerald-400 text-3xl mb-2"><i class="fa-solid fa-ticket"></i></div>
+                                <div class="text-3xl font-bold text-white">{{ $uniqueConductors > 0 ? $uniqueConductors : '-' }}</div>
+                                <div class="text-sm text-slate-400 mt-1">Kondektur</div>
+                            </div>
+                            <div class="bg-slate-800 rounded-lg p-4 text-center border border-red-500/30">
+                                <div class="text-red-400 text-3xl mb-2"><i class="fa-solid fa-scale-unbalanced"></i></div>
+                                <div class="text-3xl font-bold text-white">{{ number_format($totalPenalty, 0, ',', '.') }}</div>
+                                <div class="text-sm text-slate-400 mt-1">Total Penalti</div>
                             </div>
                         </div>
                     </div>
@@ -123,45 +131,57 @@
         <div class="space-y-8">
             <!-- GA Schedule -->
             <div class="glass-card p-6">
-                <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-4">
-                    <div class="p-2 bg-amber-500/20 text-amber-400 rounded-lg"><i class="fa-solid fa-network-wired"></i></div>
-                    <div>
-                        <h2 class="text-lg font-bold text-white">Jadwal Optimal (Genetic Algorithm)</h2>
-                        <p class="text-xs text-slate-400">Headway dinamis berdasarkan prediksi penumpang</p>
+                <div class="flex justify-between items-center mb-4 border-b border-slate-700/50 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-amber-500/20 text-amber-400 rounded-lg"><i class="fa-solid fa-network-wired"></i></div>
+                        <div>
+                            <h2 class="text-lg font-bold text-white">Tabel Jadwal Waktu Terbaru</h2>
+                            <p class="text-xs text-slate-400">Slot keberangkatan berdasarkan optimasi AI</p>
+                        </div>
                     </div>
+                    <button id="btn-apply-schedule" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-check-double"></i> Apply New Schedule
+                    </button>
                 </div>
                 
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center bg-slate-900/30 p-3 rounded-lg border border-slate-800">
-                        <span class="text-slate-300 font-medium">05.00 - 06.00</span>
-                        <span class="bg-slate-800 px-3 py-1 rounded text-sm text-slate-300">Headway 20 menit</span>
-                    </div>
-                    <div class="flex justify-between items-center bg-slate-900/30 p-3 rounded-lg border border-slate-800">
-                        <span class="text-slate-300 font-medium">06.00 - 07.00</span>
-                        <span class="bg-slate-800 px-3 py-1 rounded text-sm text-slate-300">Headway 10 menit</span>
-                    </div>
-                    <div class="flex justify-between items-center bg-indigo-900/20 p-3 rounded-lg border border-indigo-500/30 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-2 h-full bg-red-500"></div>
-                        <span class="text-indigo-300 font-bold flex items-center gap-2">07.00 - 09.00 <span class="px-2 py-0.5 bg-red-500/20 text-red-400 text-[10px] rounded uppercase font-bold">Peak</span></span>
-                        <span class="bg-indigo-500/20 border border-indigo-500/50 px-3 py-1 rounded text-sm text-indigo-200 font-bold">Headway 5 menit</span>
-                    </div>
-                    <div class="flex justify-between items-center bg-slate-900/30 p-3 rounded-lg border border-slate-800">
-                        <span class="text-slate-300 font-medium">09.00 - 15.00</span>
-                        <span class="bg-slate-800 px-3 py-1 rounded text-sm text-slate-300">Headway 15 menit</span>
-                    </div>
-                    <div class="flex justify-between items-center bg-slate-900/30 p-3 rounded-lg border border-slate-800">
-                        <span class="text-slate-300 font-medium">15.00 - 17.00</span>
-                        <span class="bg-slate-800 px-3 py-1 rounded text-sm text-slate-300">Headway 10 menit</span>
-                    </div>
-                    <div class="flex justify-between items-center bg-indigo-900/20 p-3 rounded-lg border border-indigo-500/30 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-2 h-full bg-red-500"></div>
-                        <span class="text-indigo-300 font-bold flex items-center gap-2">17.00 - 19.00 <span class="px-2 py-0.5 bg-red-500/20 text-red-400 text-[10px] rounded uppercase font-bold">Peak</span></span>
-                        <span class="bg-indigo-500/20 border border-indigo-500/50 px-3 py-1 rounded text-sm text-indigo-200 font-bold">Headway 6 menit</span>
-                    </div>
-                    <div class="flex justify-between items-center bg-slate-900/30 p-3 rounded-lg border border-slate-800">
-                        <span class="text-slate-300 font-medium">19.00 - 23.00</span>
-                        <span class="bg-slate-800 px-3 py-1 rounded text-sm text-slate-300">Headway 20 menit</span>
-                    </div>
+                <div class="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-xs text-slate-400 uppercase tracking-wider border-b border-slate-700/50">
+                                <th class="pb-3 pt-2 font-medium">Waktu Keberangkatan</th>
+                                <th class="pb-3 pt-2 font-medium">Siklus</th>
+                                <th class="pb-3 pt-2 font-medium">Headway</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm text-slate-300">
+                            @if(count($trips) > 0)
+                                @foreach($trips as $index => $trip)
+                                    <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition-colors">
+                                        <td class="py-3 font-semibold text-white">{{ $trip['departure_time'] }}</td>
+                                        <td class="py-3">
+                                            <span class="bg-indigo-500/20 text-indigo-300 px-2 py-1 rounded text-xs">Trip {{ $index + 1 }}</span>
+                                        </td>
+                                        <td class="py-3 text-slate-400">
+                                            @if($index > 0)
+                                                @php
+                                                    $prev = \Carbon\Carbon::parse($trips[$index-1]['departure_time']);
+                                                    $curr = \Carbon\Carbon::parse($trip['departure_time']);
+                                                    $diff = $prev->diffInMinutes($curr);
+                                                @endphp
+                                                {{ $diff }} menit
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="3" class="py-4 text-center text-slate-500">Data jadwal tidak ditemukan.</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -294,6 +314,53 @@
             map.fitBounds(L.polyline(latlngs).getBounds(), {padding: [30, 30]});
         } else {
             document.getElementById('map').innerHTML = '<div class="flex items-center justify-center h-full text-slate-500">Data lokasi halte tidak tersedia di payload untuk rute ini.</div>';
+        }
+        
+        // Handle Apply Schedule
+        const btnApply = document.getElementById('btn-apply-schedule');
+        if (btnApply) {
+            btnApply.addEventListener('click', async function() {
+                const confirmed = confirm("Apakah Anda yakin ingin menerapkan jadwal ini ke database? Jadwal lama pada tanggal ini untuk rute terpilih akan dihapus dan diganti secara massal.");
+                if (!confirmed) return;
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const jobId = urlParams.get('job_id');
+                if (!jobId) {
+                    alert('Job ID tidak ditemukan!');
+                    return;
+                }
+                
+                const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
+                const token = localStorage.getItem('token');
+                
+                btnApply.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+                btnApply.disabled = true;
+                
+                try {
+                    const response = await fetch(`${API_URL}/api/admin/schedules/apply`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ job_id: jobId })
+                    });
+                    
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert('Sukses! Jadwal baru berhasil diterapkan ke database.');
+                    } else {
+                        alert('Gagal: ' + (result.message || 'Terjadi kesalahan pada server.'));
+                    }
+                } catch(e) {
+                    alert('Gagal terhubung ke server.');
+                    console.error(e);
+                }
+                
+                btnApply.innerHTML = '<i class="fa-solid fa-check-double"></i> Apply New Schedule';
+                btnApply.disabled = false;
+            });
         }
     });
 </script>

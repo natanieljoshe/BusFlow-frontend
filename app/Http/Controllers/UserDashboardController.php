@@ -107,17 +107,4 @@ class UserDashboardController extends Controller
 
         return view('user.user_my_wallet', compact('wallet', 'history'));
     }
-
-    public function notifications(Request $request): View
-    {
-        $notifications = [];
-        if (session('api_token')) {
-            $res = Http::withHeaders($this->getHeaders())->get($this->getApiUrl() . '/notifications');
-            if ($res->successful()) {
-                $notifications = $res->json('data');
-            }
-        }
-        
-        return view('user.user_notifications', compact('notifications'));
-    }
 }

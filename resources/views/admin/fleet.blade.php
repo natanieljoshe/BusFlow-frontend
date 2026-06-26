@@ -93,14 +93,15 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Driver(s)</label>
-                    <select id="bus-driver" multiple class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm h-24">
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Driver</label>
+                    <select id="bus-driver" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                        <option value="">-- Select Driver --</option>
                     </select>
-                    <p class="text-[10px] text-slate-500 mt-1">Hold Ctrl (Windows) or Cmd (Mac) to select multiple</p>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Conductor(s)</label>
-                    <select id="bus-conductor" multiple class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm h-24">
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Conductor</label>
+                    <select id="bus-conductor" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                        <option value="">-- Select Conductor --</option>
                     </select>
                 </div>
                 <div>
