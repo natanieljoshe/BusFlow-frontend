@@ -21,3 +21,13 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# AI/ML & Python generated files
+/app/Algorithms/models/*.pkl
+/app/Algorithms/models/*.h5
+/app/Algorithms/models/*.pt
+/app/Algorithms/src/*.csv
+/app/Algorithms/src/__pycache__/
+/app/Algorithms/__pycache__/
+*.pkl
+__pycache__/
