@@ -74,7 +74,6 @@ Route::prefix('user')->name('user.')->group(function () {
     Route::get('/boarding-scan', [UserDashboardController::class, 'boardingScan'])->name('boarding-scan');
     Route::get('/my-trip', [UserDashboardController::class, 'myTrip'])->name('my-trip');
     Route::get('/my-wallet', [UserDashboardController::class, 'myWallet'])->name('my-wallet');
-    Route::get('/notifications', [UserDashboardController::class, 'notifications'])->name('notifications');
 });
 
 Route::prefix('sopir')->name('sopir.')->group(function () {

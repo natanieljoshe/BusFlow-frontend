@@ -89,15 +89,6 @@
                 </li>
                 <li>
                     <a class="nav-link flex items-center gap-2.5 min-h-[42px] px-3 border border-transparent rounded-[10px] text-[#b8c8e8] text-sm font-bold no-underline transition-all duration-[220ms]
-                        {{ request()->routeIs('user.notifications') ? 'is-active' : '' }}" href="{{ route('user.notifications') }}">
-                        <span class="nav-icon w-[26px] h-[26px] grid place-items-center bg-violet-500/10 rounded-[7px] shrink-0 transition-all duration-[220ms] text-[#c084fc]">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                        </span>
-                        <span>Notifications</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-link flex items-center gap-2.5 min-h-[42px] px-3 border border-transparent rounded-[10px] text-[#b8c8e8] text-sm font-bold no-underline transition-all duration-[220ms]
                         {{ request()->routeIs('user.my-wallet') ? 'is-active' : '' }}" href="{{ route('user.my-wallet') }}">
                         <span class="nav-icon w-[26px] h-[26px] grid place-items-center bg-violet-500/10 rounded-[7px] shrink-0 transition-all duration-[220ms] text-[#c084fc]">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
