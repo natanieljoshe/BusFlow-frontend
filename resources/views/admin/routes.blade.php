@@ -42,8 +42,8 @@
                             class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">Base Fare (Rp)</label>
-                        <input type="number" id="route-fare" required
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Base Fare ($)</label>
+                        <input type="number" id="route-fare" required min="3" step="0.01"
                             class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
                     </div>
                     <div class="flex justify-end gap-3 mt-6">
@@ -70,7 +70,7 @@
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', async () => {
-                const API_URL = window.API_URL || 'http://localhost:8001';
+                const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
                 const token = localStorage.getItem('token');
                 if (!token) {
                     document.getElementById('routes-grid').innerHTML =
@@ -111,8 +111,8 @@
                         routesList.forEach(r => {
                             const name = r.name || 'Unknown Route';
                             const rawFare = parseFloat(r.fare_per_km || 0);
-                            const fare = Math.max(rawFare, 5000);
-                            const fareDisplay = 'Rp ' + fare.toLocaleString('id-ID');
+                            const fare = Math.max(rawFare, 3);
+                            const fareDisplay = '$' + fare.toFixed(2);
                             const id = r.id;
 
                             grid.innerHTML += `
@@ -150,7 +150,7 @@
                     document.getElementById('modal-title').innerText = 'Add New Route';
                     document.getElementById('route-id').value = '';
                     document.getElementById('route-name').value = '';
-                    document.getElementById('route-fare').value = '5000';
+                    document.getElementById('route-fare').value = '3';
                     const modal = document.getElementById('route-modal');
                     modal.classList.remove('hidden');
                     modal.classList.add('flex');
@@ -173,7 +173,7 @@
                     if (!confirm('Are you sure you want to delete this route?')) return;
                     try {
                         const response = await fetch(
-                            `${window.API_URL || 'http://localhost:8001'}/api/admin/routes/${id}`, {
+                            `${API_URL}/api/admin/routes/${id}`, {
                                 method: 'DELETE',
                                 headers: {
                                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -204,7 +204,7 @@
 
                     try {
                         const response = await fetch(
-                            `${window.API_URL || 'http://localhost:8001'}${url}`, {
+                            `${API_URL}${url}`, {
                                 method: method,
                                 headers: {
                                     'Authorization': `Bearer ${localStorage.getItem('token')}`,

@@ -76,7 +76,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', async function() {
-    const API_URL = window.API_URL || 'http://localhost:8001';
+    const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
     const token = localStorage.getItem('token');
     if (!token) return;
 

@@ -67,7 +67,7 @@
         <form id="topup-form" class="space-y-4">
             <div>
                 <label class="block text-xs font-medium text-slate-400 mb-1">Amount (USD)</label>
-                <input type="number" id="topup-amount" required min="5" step="5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 text-lg font-bold" placeholder="20">
+                <input type="number" id="topup-amount" required min="3" step="1" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 text-lg font-bold" placeholder="20">
             </div>
             
             <div class="grid grid-cols-3 gap-2 mt-2">
@@ -118,8 +118,7 @@
         btn.disabled = true;
 
         try {
-            const API_URL = window.API_URL || 'http://127.0.0.1:8010';
-            const res = await fetch(`${API_URL}/api/wallet/topup`, {
+            const res = await fetch(`{{ env('API_URL', 'http://127.0.0.1:8010/api') }}/wallet/topup`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,

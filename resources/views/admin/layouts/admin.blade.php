@@ -85,7 +85,7 @@
         if(baseApiUrl.endsWith('/api')) {
             baseApiUrl = baseApiUrl.slice(0, -4);
         }
-        window.API_URL = baseApiUrl || 'http://127.0.0.1:8010';
+        
 
         // Mobile sidebar toggle logic
         document.addEventListener('DOMContentLoaded', () => {

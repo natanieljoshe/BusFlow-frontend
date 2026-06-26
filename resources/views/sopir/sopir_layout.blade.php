@@ -42,7 +42,7 @@
         .nav-link:hover .nav-icon, .nav-link.is-active .nav-icon { background:rgba(168,85,247,.28);box-shadow:0 0 12px rgba(168,85,247,.5); }
         .nav-link.is-active,.nav-link:hover { border-color:rgba(168,85,247,.55)!important;background:linear-gradient(90deg,rgba(168,85,247,.15),rgba(34,211,238,.07))!important;color:#fff!important;box-shadow:0 0 18px rgba(168,85,247,.22),inset 0 0 14px rgba(168,85,247,.07); }
     </style>
-    <script>window.API_URL = 'http://127.0.0.1:8010';</script>
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>

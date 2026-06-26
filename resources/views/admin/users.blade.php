@@ -89,7 +89,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
-    const API_URL = window.API_URL || 'http://localhost:8001';
+    const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
     const token = localStorage.getItem('token');
     if (!token) {
         document.getElementById('users-table-body').innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-red-400">Silakan login terlebih dahulu.</td></tr>`;
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.deleteUser = async function(id) {
         if(!confirm('Are you sure you want to delete this user?')) return;
         try {
-            const response = await fetch(`${window.API_URL || 'http://localhost:8001'}/api/admin/users/${id}`, {
+            const response = await fetch(`${API_URL}/api/admin/users/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`, 'Accept': 'application/json' }
             });
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (password) payload.password = password;
 
         try {
-            const response = await fetch(`${window.API_URL || 'http://localhost:8001'}${url}`, {
+            const response = await fetch(`${API_URL}${url}`, {
                 method: method,
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,

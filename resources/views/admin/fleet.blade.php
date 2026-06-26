@@ -131,7 +131,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
-    const API_URL = window.API_URL || 'http://localhost:8001';
+    const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
     const token = localStorage.getItem('token');
     if (!token) {
         document.getElementById('fleet-grid').innerHTML = `<div class="col-span-full text-center py-10 text-red-400">Silakan login terlebih dahulu. Token tidak ditemukan.</div>`;
@@ -274,7 +274,7 @@ window.editBus = function(id, plate, capacity, status, driverIds, conductorIds, 
 window.deleteBus = async function(id) {
     if(!confirm('Are you sure you want to delete this bus?')) return;
     try {
-        const response = await fetch(`${window.API_URL || 'http://localhost:8001'}/api/admin/buses/${id}`, {
+        const response = await fetch(`${API_URL}/api/admin/buses/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`, 'Accept': 'application/json' }
         });
@@ -306,7 +306,7 @@ document.getElementById('bus-form').addEventListener('submit', async (e) => {
     btn.disabled = true;
 
     try {
-        const response = await fetch(`${window.API_URL || 'http://localhost:8001'}${url}`, {
+        const response = await fetch(`${API_URL}${url}`, {
             method: method,
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -340,7 +340,7 @@ document.getElementById('bus-form').addEventListener('submit', async (e) => {
 
 window.loadSelectOptions = async function() {
     try {
-        const API_URL = window.API_URL || 'http://localhost:8001';
+        const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
         const [driversRes, condsRes, routesRes] = await Promise.all([
             fetch(`${API_URL}/api/admin/drivers`, { headers }),
             fetch(`${API_URL}/api/admin/conductors`, { headers }),

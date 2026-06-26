@@ -40,9 +40,7 @@
         @yield('content')
     </div>
 
-    <script>
-        window.API_URL = "{{ env('API_URL', 'http://localhost:8001') }}";
-    </script>
+    
     @stack('scripts')
 </body>
 </html>

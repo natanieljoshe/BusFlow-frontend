@@ -22,7 +22,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const API_URL = window.API_URL || 'http://127.0.0.1:8010';
+            const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
             const container = document.getElementById('haltes-container');
             const title = document.getElementById('route-title');
             
@@ -92,7 +92,7 @@
             btn.disabled = true;
 
             try {
-                const API_URL = window.API_URL || 'http://127.0.0.1:8010';
+                const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
                 const res = await fetch(`${API_URL}/api/driver/update-location`, {
                     method: 'POST',
                     headers: {
