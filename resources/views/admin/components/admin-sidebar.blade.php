@@ -60,12 +60,6 @@
                     <span class="font-medium text-sm">Users & RBAC</span>
                 </a>
 
-                <a href="{{ route('admin.schedule') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.schedule') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' }}">
-                    <i class="fa-solid fa-calendar-alt w-5 text-center"></i>
-                    <span class="font-medium text-sm">AI Optimizer (Integrated)</span>
-                </a>
-
                 <a href="{{ route('admin.analytics') }}"
                     class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.analytics') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' }}">
                     <i class="fa-solid fa-chart-line w-5 text-center"></i>

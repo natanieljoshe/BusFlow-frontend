@@ -15,12 +15,20 @@
         box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
         border-color: #6366f1;
     }
+    .mode-btn {
+        transition: all 0.3s ease;
+    }
+    .mode-btn.active {
+        background-color: #4f46e5;
+        color: white;
+        border-color: #4f46e5;
+    }
 </style>
 @endpush
 
 @section('content')
 <div class="flex flex-col items-center justify-center w-full max-w-4xl mx-auto py-8">
-    <div class="text-center mb-10 w-full">
+    <div class="text-center mb-6 w-full">
         <h2 class="text-3xl font-bold mb-4 text-white">
             Konfigurasi Parameter Optimasi
         </h2>
@@ -29,10 +37,26 @@
         </p>
     </div>
 
+    <!-- Mode Selection -->
+    <div class="flex justify-center mb-8 w-full">
+        <div class="inline-flex rounded-md shadow-sm" role="group">
+            <button type="button" id="btn-mode-json" onclick="switchMode('json')" class="mode-btn active px-6 py-2.5 text-sm font-medium border border-slate-700 rounded-l-lg bg-indigo-600 text-white hover:bg-slate-700">
+                JSON Data (Demo)
+            </button>
+            <button type="button" id="btn-mode-db" onclick="switchMode('db')" class="mode-btn px-6 py-2.5 text-sm font-medium border-t border-b border-r border-slate-700 rounded-r-lg bg-slate-800 text-slate-300 hover:bg-slate-700">
+                Database Data (Live)
+            </button>
+        </div>
+    </div>
+
     <div class="glass-panel w-full rounded-2xl p-8 shadow-2xl">
-        <form action="{{ route('admin.ga-results') }}" method="GET" class="space-y-6">
+        
+        <!-- JSON MODE FORM -->
+        <form id="form-json" action="{{ route('admin.ga-results') }}" method="GET" class="space-y-6">
+            <div class="mb-4 text-center">
+                <span class="inline-block bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full text-xs font-semibold border border-indigo-500/30">Mode: Mockup / JSON Static Payload</span>
+            </div>
             
-            <!-- Route & Date -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2 relative">
                     <label for="route" class="text-sm font-medium text-slate-300">Pilih Rute Bus</label>
@@ -54,7 +78,6 @@
                 </div>
             </div>
 
-            <!-- Operating Hours -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
                     <label for="start_time" class="text-sm font-medium text-slate-300">Jam Operasional Mulai</label>
@@ -67,7 +90,6 @@
                 </div>
             </div>
 
-            <!-- Fleet & Capacity -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
                     <label for="fleet_count" class="text-sm font-medium text-slate-300">Jumlah Armada Tersedia</label>
@@ -90,14 +112,217 @@
                 </div>
             </div>
 
-            <!-- Submit Button -->
             <div class="pt-6">
                 <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-6 py-4 transition-all duration-300 flex items-center justify-center gap-2 group">
-                    <span>Jalankan Optimasi AI</span>
+                    <span>Jalankan Optimasi AI (Demo)</span>
+                    <i class="fa-solid fa-wand-magic-sparkles group-hover:rotate-12 transition-transform duration-300"></i>
+                </button>
+            </div>
+        </form>
+
+        <!-- DATABASE MODE FORM -->
+        <form id="form-db" class="space-y-6 hidden">
+            <div class="mb-4 text-center">
+                <span class="inline-block bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-xs font-semibold border border-emerald-500/30">Mode: Live Database Backend Integration</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2 relative">
+                    <label for="route_db" class="text-sm font-medium text-slate-300">Pilih Rute Bus</label>
+                    <select id="route_db" name="route" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 outline-none input-glow transition-all duration-300 appearance-none" required>
+                        <option value="">-- Memuat rute... --</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400" style="margin-top: 28px;">
+                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="date_db" class="text-sm font-medium text-slate-300">Pilih Tanggal</label>
+                    <input type="date" id="date_db" name="date" value="{{ date('Y-m-d') }}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 outline-none input-glow transition-all duration-300" required>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="start_time_db" class="text-sm font-medium text-slate-300">Jam Operasional Mulai</label>
+                    <input type="time" id="start_time_db" name="start_time" value="05:00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 outline-none input-glow transition-all duration-300" required>
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="end_time_db" class="text-sm font-medium text-slate-300">Jam Operasional Selesai</label>
+                    <input type="time" id="end_time_db" name="end_time" value="23:00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 outline-none input-glow transition-all duration-300" required>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="fleet_count_db" class="text-sm font-medium text-slate-300">Jumlah Armada (Otomatis dari DB)</label>
+                    <div class="relative">
+                        <input type="number" id="fleet_count_db" name="fleet_count" value="0" min="1" max="50" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 pl-10 text-slate-400 outline-none input-glow transition-all duration-300 cursor-not-allowed" readonly>
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-bus-simple text-slate-400"></i>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-1">Dihitung otomatis berdasarkan rute yang dipilih.</p>
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="bus_capacity_db" class="text-sm font-medium text-slate-300">Kapasitas Rata-rata Bus (Otomatis)</label>
+                    <div class="relative">
+                        <input type="number" id="bus_capacity_db" name="bus_capacity" value="80" min="10" max="150" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 pl-10 text-slate-400 outline-none input-glow transition-all duration-300 cursor-not-allowed" readonly>
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-users text-slate-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6">
+                <button type="submit" id="btn-submit-db" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl px-6 py-4 transition-all duration-300 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span>Jalankan Optimasi AI (Live)</span>
                     <i class="fa-solid fa-wand-magic-sparkles group-hover:rotate-12 transition-transform duration-300"></i>
                 </button>
             </div>
         </form>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    function switchMode(mode) {
+        const formJson = document.getElementById('form-json');
+        const formDb = document.getElementById('form-db');
+        const btnJson = document.getElementById('btn-mode-json');
+        const btnDb = document.getElementById('btn-mode-db');
+
+        if (mode === 'json') {
+            formJson.classList.remove('hidden');
+            formDb.classList.add('hidden');
+            
+            btnJson.classList.add('bg-indigo-600', 'text-white');
+            btnJson.classList.remove('bg-slate-800', 'text-slate-300');
+            
+            btnDb.classList.remove('bg-indigo-600', 'text-white');
+            btnDb.classList.add('bg-slate-800', 'text-slate-300');
+        } else {
+            formDb.classList.remove('hidden');
+            formJson.classList.add('hidden');
+            
+            btnDb.classList.add('bg-indigo-600', 'text-white');
+            btnDb.classList.remove('bg-slate-800', 'text-slate-300');
+            
+            btnJson.classList.remove('bg-indigo-600', 'text-white');
+            btnJson.classList.add('bg-slate-800', 'text-slate-300');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
+        const token = localStorage.getItem('token');
+        
+        if (!token) return;
+
+        const headers = {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+
+        let allRoutes = [];
+        let allBuses = [];
+
+        try {
+            const [routesRes, busesRes] = await Promise.all([
+                fetch(`${API_URL}/api/admin/routes`, { headers }),
+                fetch(`${API_URL}/api/admin/buses`, { headers })
+            ]);
+
+            if (routesRes.ok) {
+                const data = await routesRes.json();
+                allRoutes = Array.isArray(data) ? data : (data.data || []);
+            }
+            if (busesRes.ok) {
+                const data = await busesRes.json();
+                allBuses = Array.isArray(data) ? data : (data.data || []);
+            }
+            
+            if(!Array.isArray(allRoutes)) allRoutes = Object.values(allRoutes);
+            if(!Array.isArray(allBuses)) allBuses = Object.values(allBuses);
+
+            const routeSelect = document.getElementById('route_db');
+            routeSelect.innerHTML = '<option value="">-- Pilih Rute --</option>';
+            
+            allRoutes.forEach(r => {
+                routeSelect.innerHTML += `<option value="${r.id}">${r.name} (${r.code})</option>`;
+            });
+        } catch(e) {
+            console.error("Error fetching data:", e);
+        }
+
+        document.getElementById('route_db').addEventListener('change', (e) => {
+            const routeId = e.target.value;
+            const btn = document.getElementById('btn-submit-db');
+            
+            if (!routeId) {
+                document.getElementById('fleet_count_db').value = 0;
+                btn.disabled = true;
+                return;
+            }
+
+            const routeBuses = allBuses.filter(b => b.route_id == routeId);
+            document.getElementById('fleet_count_db').value = routeBuses.length;
+
+            if (routeBuses.length === 0) {
+                alert('Tidak ada armada bus yang di-assign ke rute ini.');
+                btn.disabled = true;
+            } else {
+                let totalCap = 0;
+                routeBuses.forEach(b => totalCap += (b.capacity || 0));
+                document.getElementById('bus_capacity_db').value = Math.round(totalCap / routeBuses.length) || 80;
+                btn.disabled = false;
+            }
+        });
+        
+        document.getElementById('form-db').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-db');
+            const originalHtml = btn.innerHTML;
+            
+            btn.innerHTML = '<span>Menjalankan Optimasi...</span><i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_URL}/api/admin/schedules/generate`, {
+                    method: 'POST',
+                    headers: { ...headers, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        route: document.getElementById('route_db').value,
+                        date: document.getElementById('date_db').value,
+                        start_time: document.getElementById('start_time_db').value,
+                        end_time: document.getElementById('end_time_db').value,
+                        fleet_count: document.getElementById('fleet_count_db').value,
+                        bus_capacity: document.getElementById('bus_capacity_db').value
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert('Sukses: ' + data.message + '\n\nMengarahkan ke halaman hasil optimasi...');
+                    window.location.href = '/admin/ga-results';
+                } else {
+                    const err = await response.json();
+                    alert('Gagal menjalankan optimasi: ' + (err.message || 'Error'));
+                }
+            } catch (error) {
+                alert('Gagal terhubung ke server Backend.');
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('btn-submit-db').disabled = true;
+    });
+</script>
+@endpush
 @endsection
