@@ -6,15 +6,18 @@
         <div class="h-16 flex items-center px-6 border-b border-slate-800">
             <!-- Logo -->
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.5)]">
-                    <i class="fa-solid fa-bus text-white text-sm"></i>
+                <div class="w-10 h-10 flex items-center justify-center">
+                    <img src="{{ asset('assets/logo/logo_fix.png') }}" alt="BusFlow Logo" class="w-full h-full object-contain">
                 </div>
                 <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">BusFlow</span>
             </div>
         </div>
 
         <nav class="p-4 space-y-2 mt-2">
+            @php $userRole = session('user')['role'] ?? 'admin'; @endphp
+            
             <!-- Menu Items -->
+            @if($userRole !== 'operator')
             <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.dashboard') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-[inset_0_0_20px_rgba(99,102,241,0.1)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' }}">
                 <i class="fa-solid fa-desktop w-5 text-center"></i>
                 <span class="font-medium text-sm">Command Center</span>
@@ -29,6 +32,23 @@
                 <i class="fa-solid fa-users w-5 text-center"></i>
                 <span class="font-medium text-sm">Staff Directory</span>
             </a>
+            @endif
+
+            <a href="{{ route('admin.routes') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.routes') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' }}">
+                <i class="fa-solid fa-route w-5 text-center"></i>
+                <span class="font-medium text-sm">Routes</span>
+            </a>
+
+            @if($userRole !== 'operator')
+            <a href="{{ route('admin.haltes') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.haltes') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' }}">
+                <i class="fa-solid fa-map-pin w-5 text-center"></i>
+                <span class="font-medium text-sm">Haltes</span>
+            </a>
+
+            <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.users') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' }}">
+                <i class="fa-solid fa-user-shield w-5 text-center"></i>
+                <span class="font-medium text-sm">Users & RBAC</span>
+            </a>
 
             <a href="{{ route('admin.schedule') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.schedule') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' }}">
                 <i class="fa-solid fa-calendar-alt w-5 text-center"></i>
@@ -39,11 +59,17 @@
                 <i class="fa-solid fa-chart-line w-5 text-center"></i>
                 <span class="font-medium text-sm">Analytics</span>
             </a>
+            @endif
+
+            <a href="{{ route('admin.boarding-scanner') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.boarding-scanner') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-[inset_0_0_20px_rgba(99,102,241,0.1)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' }}">
+                <i class="fa-solid fa-qrcode w-5 text-center"></i>
+                <span class="font-medium text-sm">Boarding Scanner</span>
+            </a>
         </nav>
     </div>
 
     <div class="p-4 space-y-3">
-        <button class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors text-sm font-medium">
+        <button onclick="alert('Emergency system engaged. All services paused.')" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors text-sm font-medium">
             <i class="fa-solid fa-triangle-exclamation"></i>
             Emergency Override
         </button>

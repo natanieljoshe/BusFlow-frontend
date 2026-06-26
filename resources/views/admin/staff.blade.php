@@ -28,9 +28,49 @@
                 <option value="on_duty">On Duty</option>
                 <option value="off_duty">Off Duty</option>
             </select>
-            <button class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors shadow-[0_0_15px_rgba(79,70,229,0.3)] flex items-center gap-2">
+            <button onclick="openAddStaffModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors shadow-[0_0_15px_rgba(79,70,229,0.3)] flex items-center gap-2">
                 <i class="fa-solid fa-plus"></i> Add Staff
             </button>
+        </div>
+    </div>
+
+    <!-- Add Staff Modal -->
+    <div id="add-staff-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-md p-6 shadow-2xl transform scale-95 transition-transform duration-300 mx-4" id="add-staff-modal-content">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-xl font-bold text-white">Add New Staff</h3>
+                <button onclick="closeAddStaffModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="add-staff-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Role Type</label>
+                    <select id="staff-role-type" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                        <option value="driver">Driver</option>
+                        <option value="conductor">Conductor</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">User Account</label>
+                    <select id="staff-user-id" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                        <option value="">-- Select User --</option>
+                    </select>
+                    <p class="text-[10px] text-slate-500 mt-1">Only shows users not yet registered as staff</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Employee ID</label>
+                    <input type="text" id="staff-employee-id" placeholder="e.g. DRV-001" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Phone (optional)</label>
+                    <input type="text" id="staff-phone" placeholder="e.g. 08123456789" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" onclick="closeAddStaffModal()" class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors">Cancel</button>
+                    <button type="submit" id="save-staff-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-lg shadow-lg transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Staff
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -46,6 +86,85 @@
 
 @push('scripts')
 <script>
+// ---- Add Staff Modal ----
+let allUsers = [];
+
+window.openAddStaffModal = async function() {
+    const modal = document.getElementById('add-staff-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setTimeout(() => document.getElementById('add-staff-modal-content').classList.remove('scale-95'), 10);
+
+    // Load available users (not yet staff)
+    const API_URL = window.API_URL || 'http://localhost:8001';
+    const token = localStorage.getItem('token');
+    const userSel = document.getElementById('staff-user-id');
+    userSel.innerHTML = '<option value="">Loading...</option>';
+    try {
+        const res = await fetch(`${API_URL}/api/admin/users`, {
+            headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        allUsers = Array.isArray(data) ? data : (data.data || []);
+        userSel.innerHTML = '<option value="">-- Select User --</option>' +
+            allUsers.map(u => `<option value="${u.id}">${u.name} (${u.email})</option>`).join('');
+    } catch(e) {
+        userSel.innerHTML = '<option value="">Failed to load users</option>';
+    }
+};
+
+window.closeAddStaffModal = function() {
+    document.getElementById('add-staff-modal-content').classList.add('scale-95');
+    setTimeout(() => {
+        const modal = document.getElementById('add-staff-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }, 200);
+};
+
+document.getElementById('add-staff-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const API_URL = window.API_URL || 'http://localhost:8001';
+    const token = localStorage.getItem('token');
+    const roleType = document.getElementById('staff-role-type').value;
+    const userId = document.getElementById('staff-user-id').value;
+    const employeeId = document.getElementById('staff-employee-id').value.trim();
+    const phone = document.getElementById('staff-phone').value.trim();
+    const btn = document.getElementById('save-staff-btn');
+
+    if (!userId) { alert('Please select a user.'); return; }
+    if (!employeeId) { alert('Please enter an Employee ID.'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+    const endpoint = roleType === 'driver' ? '/api/admin/drivers' : '/api/admin/conductors';
+    const body = { user_id: parseInt(userId), employee_id: employeeId };
+    if (phone) body.phone = phone;
+
+    try {
+        const res = await fetch(`${API_URL}${endpoint}`, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify(body)
+        });
+        if (res.ok) {
+            closeAddStaffModal();
+            document.getElementById('add-staff-form').reset();
+            // Reload staff list
+            location.reload();
+        } else {
+            const err = await res.json();
+            alert('Error: ' + (err.message || JSON.stringify(err.errors || err)));
+        }
+    } catch(err) {
+        alert('Network error: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Staff';
+    }
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
     const API_URL = window.API_URL || 'http://localhost:8001';
     const token = localStorage.getItem('token');
@@ -147,7 +266,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
 
                 <div class="mt-4 flex gap-2">
-                    <button class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg py-2 text-xs font-medium transition-colors">Profile</button>
+                    <a href="/admin/staff/${staff.role_type.toLowerCase()}/${staff.id}" class="flex-1 text-center bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg py-2 text-xs font-medium transition-colors">
+                        <i class="fa-solid fa-id-card mr-1"></i> Profile
+                    </a>
                 </div>
             </div>`;
         });
@@ -190,6 +311,4 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 </script>
 @endpush
-
-</div>
 @endsection

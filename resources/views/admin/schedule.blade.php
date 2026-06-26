@@ -48,7 +48,7 @@
                     </div>
                 </div>
 
-                <button type="button" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors shadow-[0_0_15px_rgba(79,70,229,0.3)] flex justify-center items-center gap-2">
+                <button type="button" onclick="alert('Menunggu Model ML (Python)')" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors shadow-[0_0_15px_rgba(79,70,229,0.3)] flex justify-center items-center gap-2">
                     <i class="fa-solid fa-play"></i> Run Optimization
                 </button>
             </form>
@@ -103,7 +103,7 @@
                 </h3>
                 <p class="text-xs text-slate-400 mt-1">Jadwal dari kromosom terbaik di generasi terakhir</p>
             </div>
-            <button class="text-xs font-medium px-4 py-2 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors border border-slate-700 flex items-center gap-2">
+            <button onclick="alert('Feature in development')" class="text-xs font-medium px-4 py-2 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors border border-slate-700 flex items-center gap-2">
                 <i class="fa-solid fa-download"></i> Export
             </button>
         </div>
@@ -125,7 +125,7 @@
             </table>
         </div>
         <div class="p-4 border-t border-slate-800 bg-slate-900 text-center">
-            <button class="text-sm text-indigo-400 hover:text-indigo-300 transition-colors">Load More Rows</button>
+            <button onclick="alert('All rows loaded')" class="text-sm text-indigo-400 hover:text-indigo-300 transition-colors">Load More Rows</button>
         </div>
     </div>
 

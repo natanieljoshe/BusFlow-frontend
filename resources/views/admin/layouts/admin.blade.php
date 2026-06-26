@@ -6,6 +6,8 @@
     <title>BusFlow Admin - @yield('title', 'Global Intelligence Hub')</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- tailwind css cdn -->
@@ -46,8 +48,15 @@
     </style>
     @stack('styles')
     
-    <!-- Global Route Guard -->
+    <!-- Global Route Guard & Token Sync -->
     <script>
+        const serverToken = "{{ session('api_token') }}";
+        if (serverToken) {
+            localStorage.setItem('token', serverToken);
+        } else {
+            localStorage.removeItem('token');
+        }
+
         if (!localStorage.getItem('token')) {
             window.location.href = "{{ route('login') }}";
         }
@@ -71,7 +80,12 @@
     </div>
 
     <script>
-        window.API_URL = "{{ env('API_URL') }}";
+        // Set API base URL (strip /api suffix if present)
+        let baseApiUrl = "{{ env('API_URL', 'http://127.0.0.1:8010/api') }}";
+        if(baseApiUrl.endsWith('/api')) {
+            baseApiUrl = baseApiUrl.slice(0, -4);
+        }
+        window.API_URL = baseApiUrl || 'http://127.0.0.1:8010';
 
         // Mobile sidebar toggle logic
         document.addEventListener('DOMContentLoaded', () => {

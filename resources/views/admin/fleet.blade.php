@@ -56,12 +56,67 @@
     <!-- Active Roster Banner -->
     <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 border border-indigo-500/10">
         <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500 rounded-full mix-blend-screen filter blur-3xl opacity-20"></div>
-        <h3 class="text-lg font-semibold text-white mb-2 flex items-center gap-2">
-            <i class="fa-solid fa-layer-group text-indigo-400"></i> Active Roster
-        </h3>
-        <p class="text-sm text-indigo-200/70 max-w-2xl">
-            Monitoring the next generation of urban transit. Our high-tech fleet is equipped with real-time diagnostics and autonomous navigation capabilities for maximum efficiency.
-        </p>
+        <div class="flex items-center justify-between z-10 relative">
+            <div>
+                <h3 class="text-lg font-semibold text-white mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-indigo-400"></i> Active Roster
+                </h3>
+                <p class="text-sm text-indigo-200/70 max-w-2xl">
+                    Monitoring the next generation of urban transit. Our high-tech fleet is equipped with real-time diagnostics and autonomous navigation capabilities.
+                </p>
+            </div>
+            <button onclick="openBusModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-lg shadow-lg transition-colors flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i> Add New Bus
+            </button>
+        </div>
+    </div>
+
+    <!-- Bus Modal -->
+    <div id="bus-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-md p-6 shadow-2xl transform scale-95 transition-transform duration-300" id="bus-modal-content">
+            <h3 id="modal-title" class="text-xl font-bold text-white mb-4">Add New Bus</h3>
+            <form id="bus-form" class="space-y-4">
+                <input type="hidden" id="bus-id">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Plate Number</label>
+                    <input type="text" id="bus-plate" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Capacity</label>
+                    <input type="number" id="bus-capacity" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Status</label>
+                    <select id="bus-status" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                        <option value="1">Active</option>
+                        <option value="0">Maintenance</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Driver(s)</label>
+                    <select id="bus-driver" multiple class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm h-24">
+                    </select>
+                    <p class="text-[10px] text-slate-500 mt-1">Hold Ctrl (Windows) or Cmd (Mac) to select multiple</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Conductor(s)</label>
+                    <select id="bus-conductor" multiple class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm h-24">
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Route</label>
+                    <select id="bus-route" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                        <option value="">-- Unassigned --</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" onclick="closeBusModal()" class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors">Cancel</button>
+                    <button type="submit" id="save-bus-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-lg shadow-lg transition-colors flex items-center gap-2">
+                        Save Bus
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Fleet Grid -->
@@ -88,6 +143,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'Authorization': `Bearer ${token}`
     };
 
+    window.loadBuses = async function() {
     try {
         const response = await fetch(`${API_URL}/api/admin/buses`, { headers });
         if (response.status === 401) {
@@ -108,13 +164,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        // Calculate dynamic stats
+        // Calculate dynamic stats — status from DB is boolean (true=active, false=maintenance)
         const totalBuses = buses.length;
-        const activeBusesCount = buses.filter(b => (b.status || '').toLowerCase() === 'active').length;
-        const maintenanceBusesCount = buses.filter(b => (b.status || '').toLowerCase() === 'maintenance').length;
-        const alertBusesCount = buses.filter(b => (b.status || '').toLowerCase() === 'alert').length;
+        const activeBusesCount = buses.filter(b => b.status == 1 || b.status === true).length;
+        const maintenanceBusesCount = buses.filter(b => b.status == 0 || b.status === false).length;
+        const alertBusesCount = 0; // no alert status yet
 
-        const healthPercent = totalBuses === 0 ? 0 : Math.round((activeBusesCount / totalBuses) * 1000) / 10;
+        const healthPercent = totalBuses === 0 ? 0 : Math.round((activeBusesCount / totalBuses) * 100);
         
         document.getElementById('fleet-health').innerText = `${healthPercent}%`;
         document.getElementById('fleet-maintenance-count').innerText = `${maintenanceBusesCount} Units`;
@@ -125,7 +181,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('dist-alert').innerText = `Alert (${alertBusesCount})`;
 
         buses.forEach(bus => {
-            const isActive = bus.status == 1 || bus.status === true;
+            const isActive = bus.status == 1 || bus.status === true || (typeof bus.status === 'string' && bus.status.toLowerCase() === 'active');
             let statusColor = isActive ? 'emerald' : 'amber';
             let statusIcon = isActive ? 'fa-bus' : 'fa-wrench';
             let statusLabel = isActive ? 'ACTIVE' : 'MAINTENANCE';
@@ -133,12 +189,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                 : 'bg-amber-500/10 text-amber-500 border-amber-500/20';
 
-            const plate = bus.plate_number || bus.id || 'N/A';
+            const plate = bus.plate_number || 'N/A';
             const capacity = bus.capacity || '?';
+            const id = bus.id;
             
             grid.innerHTML += `
             <div class="bg-slate-900/40 backdrop-blur-md border border-slate-800 rounded-xl overflow-hidden hover:border-${statusColor}-500/30 transition-all duration-300 shadow-lg group">
-                <div class="p-5 border-b border-slate-800/50 bg-slate-800/20">
+                <a href="/admin/fleet/${id}" class="block p-5 border-b border-slate-800/50 bg-slate-800/20 hover:bg-slate-800/40 transition-colors">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-lg bg-${statusColor}-500/10 border border-${statusColor}-500/30 flex items-center justify-center">
@@ -146,23 +203,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                             </div>
                             <div>
                                 <h4 class="text-white font-bold tracking-wide">${plate}</h4>
-                                <span class="text-[10px] text-slate-400 font-mono">Capacity: ${capacity}</span>
+                                <span class="text-[10px] text-slate-400 font-mono">Capacity: ${capacity} | Drivers: ${bus.drivers && bus.drivers.length ? bus.drivers.map(d => d.user ? d.user.name : 'Unknown').join(', ') : 'Unassigned'} | Conds: ${bus.conductors && bus.conductors.length ? bus.conductors.map(c => c.user ? c.user.name : 'Unknown').join(', ') : 'Unassigned'} | Route: ${bus.route ? bus.route.name : 'Unassigned'}</span>
                             </div>
                         </div>
                         <span class="px-2 py-0.5 rounded text-[10px] font-bold ${statusBadge} border flex items-center gap-1.5">
                             <span class="w-1.5 h-1.5 rounded-full bg-${statusColor}-500 ${isActive ? 'animate-pulse' : ''}"></span> ${statusLabel}
                         </span>
                     </div>
-                </div>
+                </a>
                 <div class="p-5 space-y-4">
-                    <div class="flex justify-between items-end border-b border-slate-800/50 pb-3">
-                        <div>
-                            <p class="text-xs text-slate-500 mb-1">Current Route</p>
-                            <p class="text-sm text-slate-200 font-medium"><i class="fa-solid fa-route text-indigo-400 mr-1.5"></i> ${bus.route_id ? `Route ${bus.route_id}` : '--'}</p>
-                        </div>
-                    </div>
-                    <div class="mt-4 flex justify-end gap-2">
-                        <button class="px-3 py-1.5 text-[11px] font-medium rounded border border-slate-700 text-slate-300 hover:bg-slate-800 transition-colors">Details</button>
+                    <div class="mt-1 flex justify-end gap-2">
+                        <button onclick="editBus(${id}, '${plate}', ${capacity}, ${isActive ? 1 : 0}, [${bus.drivers ? bus.drivers.map(d=>d.id).join(',') : ''}], [${bus.conductors ? bus.conductors.map(c=>c.id).join(',') : ''}], ${bus.route_id || 'null'})" class="px-3 py-1.5 text-[11px] font-medium rounded border border-indigo-700/50 text-indigo-300 hover:bg-indigo-600 hover:text-white transition-colors"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button onclick="deleteBus(${id})" class="px-3 py-1.5 text-[11px] font-medium rounded border border-red-700/50 text-red-300 hover:bg-red-600 hover:text-white transition-colors"><i class="fa-solid fa-trash"></i> Delete</button>
                     </div>
                 </div>
             </div>`;
@@ -172,6 +224,160 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error("Error fetching buses:", error);
         document.getElementById('fleet-grid').innerHTML = `<div class="col-span-full text-center py-10 text-red-400">Failed to load fleet data.</div>`;
     }
+};
+
+window.openBusModal = function() {
+    document.getElementById('modal-title').innerText = 'Add New Bus';
+    document.getElementById('bus-id').value = '';
+    document.getElementById('bus-plate').value = '';
+    document.getElementById('bus-capacity').value = '40';
+    document.getElementById('bus-status').value = '1';
+    Array.from(document.getElementById('bus-driver').options).forEach(opt => opt.selected = false);
+    Array.from(document.getElementById('bus-conductor').options).forEach(opt => opt.selected = false);
+    document.getElementById('bus-route').value = '';
+    const modal = document.getElementById('bus-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setTimeout(() => document.getElementById('bus-modal-content').classList.remove('scale-95'), 10);
+};
+
+window.closeBusModal = function() {
+    document.getElementById('bus-modal-content').classList.add('scale-95');
+    setTimeout(() => {
+        const modal = document.getElementById('bus-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }, 200);
+};
+
+window.editBus = function(id, plate, capacity, status, driverIds, conductorIds, routeId) {
+    document.getElementById('modal-title').innerText = 'Edit Bus';
+    document.getElementById('bus-id').value = id;
+    document.getElementById('bus-plate').value = plate;
+    document.getElementById('bus-capacity').value = capacity;
+    document.getElementById('bus-status').value = status;
+    
+    Array.from(document.getElementById('bus-driver').options).forEach(opt => {
+        opt.selected = driverIds.includes(parseInt(opt.value));
+    });
+    Array.from(document.getElementById('bus-conductor').options).forEach(opt => {
+        opt.selected = conductorIds.includes(parseInt(opt.value));
+    });
+
+    document.getElementById('bus-route').value = routeId || '';
+    const modal = document.getElementById('bus-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setTimeout(() => document.getElementById('bus-modal-content').classList.remove('scale-95'), 10);
+};
+
+window.deleteBus = async function(id) {
+    if(!confirm('Are you sure you want to delete this bus?')) return;
+    try {
+        const response = await fetch(`${window.API_URL || 'http://localhost:8001'}/api/admin/buses/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`, 'Accept': 'application/json' }
+        });
+        if(response.ok) {
+            loadBuses();
+        } else {
+            alert('Failed to delete bus');
+        }
+    } catch(e) {
+        alert('Error deleting bus');
+    }
+};
+
+document.getElementById('bus-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('bus-id').value;
+    const plate = document.getElementById('bus-plate').value;
+    const capacity = document.getElementById('bus-capacity').value;
+    const status = document.getElementById('bus-status').value;
+    
+    const driverIds = Array.from(document.getElementById('bus-driver').selectedOptions).map(opt => opt.value);
+    const conductorIds = Array.from(document.getElementById('bus-conductor').selectedOptions).map(opt => opt.value);
+    const routeId = document.getElementById('bus-route').value;
+
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `/api/admin/buses/${id}` : '/api/admin/buses';
+    const btn = document.getElementById('save-bus-btn');
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+    btn.disabled = true;
+
+    try {
+        const response = await fetch(`${window.API_URL || 'http://localhost:8001'}${url}`, {
+            method: method,
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ 
+                plate_number: plate, 
+                capacity: capacity, 
+                status: status, 
+                driver_ids: driverIds, 
+                conductor_ids: conductorIds, 
+                route_id: routeId || null 
+            })
+        });
+        
+        if(response.ok) {
+            closeBusModal();
+            loadBuses();
+        } else {
+            const data = await response.json();
+            alert('Failed to save: ' + (data.message || 'Unknown error'));
+        }
+    } catch(err) {
+        alert('Error saving bus');
+    } finally {
+        btn.innerHTML = 'Save Bus';
+        btn.disabled = false;
+    }
+});
+
+window.loadSelectOptions = async function() {
+    try {
+        const API_URL = window.API_URL || 'http://localhost:8001';
+        const [driversRes, condsRes, routesRes] = await Promise.all([
+            fetch(`${API_URL}/api/admin/drivers`, { headers }),
+            fetch(`${API_URL}/api/admin/conductors`, { headers }),
+            fetch(`${API_URL}/api/admin/routes`, { headers })
+        ]);
+        if(driversRes.ok && routesRes.ok && condsRes.ok) {
+            const driversData = await driversRes.json();
+            const condsData = await condsRes.json();
+            const routesData = await routesRes.json();
+            
+            const drivers = Array.isArray(driversData) ? driversData : (driversData.data || []);
+            const conds = Array.isArray(condsData) ? condsData : (condsData.data || []);
+            const routes = Array.isArray(routesData) ? routesData : (routesData.data || []);
+            
+            const driverSelect = document.getElementById('bus-driver');
+            const condSelect = document.getElementById('bus-conductor');
+            const routeSelect = document.getElementById('bus-route');
+            
+            drivers.forEach(d => {
+                const driverName = d.user ? d.user.name : (d.employee_id || 'Unknown');
+                driverSelect.innerHTML += `<option value="${d.id}">${driverName}</option>`;
+            });
+            conds.forEach(c => {
+                const condName = c.user ? c.user.name : (c.employee_id || 'Unknown');
+                condSelect.innerHTML += `<option value="${c.id}">${condName}</option>`;
+            });
+            routes.forEach(r => {
+                routeSelect.innerHTML += `<option value="${r.id}">${r.name}</option>`;
+            });
+        }
+    } catch(e) {
+        console.error('Failed to load options', e);
+    }
+};
+
+loadSelectOptions();
+loadBuses();
 });
 </script>
 @endpush
