@@ -17,18 +17,6 @@
 
         <div class="hidden md:block h-6 w-px bg-slate-700"></div>
 
-        <!-- Notifications -->
-        <button class="text-slate-400 hover:text-indigo-400 transition-colors relative">
-            <i class="fa-regular fa-bell text-lg"></i>
-            <span
-                class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_5px_rgba(99,102,241,0.8)]"></span>
-        </button>
-
-        <!-- Settings -->
-        <button class="text-slate-400 hover:text-indigo-400 transition-colors">
-            <i class="fa-solid fa-gear text-lg"></i>
-        </button>
-
         <!-- User Profile -->
         <div class="flex items-center gap-3 ml-2 cursor-pointer group">
             <div class="text-right hidden sm:block">
