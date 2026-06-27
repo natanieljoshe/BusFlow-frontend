@@ -291,8 +291,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 2. Update System Overview 3 Stats Cards
-    const activeBuses = buses.filter(b => (b.status || '').toLowerCase() === 'active').length || buses.length;
-    const activeDrivers = drivers.filter(d => (d.status || '').toLowerCase() === 'available' || (d.status || '').toLowerCase() === 'on_duty').length || drivers.length;
+    const activeBuses = buses.filter(b => String(b.status || '').toLowerCase() === 'active').length || buses.length;
+    const activeDrivers = drivers.filter(d => {
+        const s = String(d.status || '').toLowerCase();
+        return s === 'available' || s === 'on_duty';
+    }).length || drivers.length;
     
     document.getElementById('stat-buses').innerText = activeBuses;
     document.getElementById('stat-drivers').innerText = activeDrivers;

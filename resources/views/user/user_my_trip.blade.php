@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <span class="text-[18px] font-bold text-[#22d3ee]">Rp {{ number_format($booking['fare'], 0, ',', '.') }}</span>
+                        <span class="text-[18px] font-bold text-[#22d3ee]">$ {{ number_format($booking['fare'], 2, '.', ',') }}</span>
                         <span class="block text-[10px] {{ $index == 0 ? 'text-[#86efac] bg-[#86efac]/10' : 'text-[#7a8aaa] bg-[#7a8aaa]/10' }} mt-1 px-2 py-0.5 rounded uppercase tracking-wider">{{ ucfirst($booking['status']) }}</span>
                     </div>
                 </div>

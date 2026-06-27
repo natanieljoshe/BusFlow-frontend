@@ -99,12 +99,13 @@
             </ul>
             @endif
 
-            @if(in_array(session('user.role'), ['driver', 'conductor']))
-            <!-- Driver Section -->
+            @if(in_array(session('user.role'), ['driver', 'conductor', 'operator']))
+            <!-- Driver/Operator Section -->
             <div
                 class="text-[10px] font-extrabold text-[#7a8aaa] uppercase tracking-[0.1em] mb-2.5 px-3 pt-2 border-t border-violet-500/10">
-                Driver Menu</div>
+                {{ session('user.role') === 'operator' ? 'Operator Menu' : 'Driver Menu' }}</div>
             <ul class="grid gap-1.5 list-none">
+                @if(in_array(session('user.role'), ['driver', 'conductor']))
                 <li>
                     <a class="nav-link flex items-center gap-2.5 min-h-[42px] px-3 border border-transparent rounded-[10px] text-[#b8c8e8] text-sm font-bold no-underline transition-all duration-[220ms]
                         {{ request()->routeIs('sopir.home') ? 'is-active' : '' }}"
@@ -119,6 +120,7 @@
                         <span>Home</span>
                     </a>
                 </li>
+                @endif
                 <li>
                     <a class="nav-link flex items-center gap-2.5 min-h-[42px] px-3 border border-transparent rounded-[10px] text-[#b8c8e8] text-sm font-bold no-underline transition-all duration-[220ms]
                         {{ request()->routeIs('sopir.trip-details') ? 'is-active' : '' }}"
@@ -135,9 +137,10 @@
                         <span>Trip Details</span>
                     </a>
                 </li>
+                @if(in_array(session('user.role'), ['driver', 'conductor']))
                 <li>
                     <a class="nav-link flex items-center gap-2.5 min-h-[42px] px-3 border border-transparent rounded-[10px] text-[#b8c8e8] text-sm font-bold no-underline transition-all duration-[220ms]
-                        {{ request()->routeIs('sopir.history') ? 'is-active' : '' }}"
+                        {{ request()->requestIs('sopir.history') ? 'is-active' : '' }}"
                         href="{{ route('sopir.history') }}">
                         <span
                             class="nav-icon w-[26px] h-[26px] grid place-items-center bg-violet-500/10 rounded-[7px] shrink-0 transition-all duration-[220ms] text-[#c084fc]">
@@ -151,6 +154,7 @@
                         <span>History</span>
                     </a>
                 </li>
+                @endif
                 <li>
                     <a class="nav-link flex items-center gap-2.5 min-h-[42px] px-3 border border-transparent rounded-[10px] text-[#b8c8e8] text-sm font-bold no-underline transition-all duration-[220ms]
                         {{ request()->routeIs('sopir.boarding-scanner') ? 'is-active' : '' }}"

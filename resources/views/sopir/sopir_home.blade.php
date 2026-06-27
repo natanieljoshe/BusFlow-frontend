@@ -45,14 +45,14 @@
                 <div class="flex justify-between items-center gap-[10px] p-[12px_14px] rounded-xl bg-[rgba(4,5,15,0.65)] border border-[rgba(148,163,184,0.08)]">
                     <div>
                         <strong class="block">Route</strong>
-                        <div><span class="text-[#7a8aaa] text-[13px]">Main Terminal → Cileungsi</span></div>
+                        <div><span class="text-[#7a8aaa] text-[13px]" id="detail-route">Main Terminal → Cileungsi</span></div>
                     </div>
-                    <span class="inline-flex items-center px-[10px] py-1.5 rounded-full bg-[rgba(134,239,172,0.14)] text-[#86efac] text-[11px] font-bold uppercase tracking-wider">Depart 06:30</span>
+                    <span class="inline-flex items-center px-[10px] py-1.5 rounded-full bg-[rgba(134,239,172,0.14)] text-[#86efac] text-[11px] font-bold uppercase tracking-wider" id="detail-depart">Depart 06:30</span>
                 </div>
                 <div class="flex justify-between items-center gap-[10px] p-[12px_14px] rounded-xl bg-[rgba(4,5,15,0.65)] border border-[rgba(148,163,184,0.08)]">
                     <div>
                         <strong class="block">Conductor</strong>
-                        <div><span class="text-[#7a8aaa] text-[13px]">Rian</span></div>
+                        <div><span class="text-[#7a8aaa] text-[13px]" id="detail-conductor">Rian</span></div>
                     </div>
                     <span class="inline-flex items-center px-[10px] py-1.5 rounded-full bg-[rgba(244,191,85,0.16)] text-[#f4bf55] text-[11px] font-bold uppercase tracking-wider">Partner</span>
                 </div>
@@ -68,7 +68,11 @@
     </div>
 
     <script>
-        (function () {
+        document.addEventListener('DOMContentLoaded', async () => {
+            const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
+            const token = localStorage.getItem('token');
+            const headers = { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` };
+
             const buttons = document.querySelectorAll('.status-switcher button');
             const badge = document.getElementById('driver-status-badge');
             const desc = document.getElementById('driver-status-desc');
@@ -122,6 +126,47 @@
             buttons.forEach((btn) => {
                 btn.addEventListener('click', () => applyStatus(btn.dataset.status));
             });
-        })();
+
+            // Fetch actual assignment data
+            try {
+                // Fetch driver's trips
+                const tripRes = await fetch(`${API_URL}/api/trips`, { headers });
+                if(tripRes.ok) {
+                    const trips = await tripRes.json();
+                    const tripList = trips.data || trips;
+                    if (tripList.length > 0) {
+                        const trip = tripList[0];
+                        // Update DOM elements manually based on ID since it's hardcoded right now
+                        // We will add ID tags to the HTML blocks and update them
+                        const assignmentTitle = document.querySelector('h2.mt-3.text-lg.font-bold');
+                        const departureTime = document.querySelector('.text-\\[\\#b8c8e8\\].leading-relaxed strong:nth-child(1)');
+                        const conductorName = document.querySelector('.text-\\[\\#b8c8e8\\].leading-relaxed strong:nth-child(2)');
+                        const fleetBus = document.querySelector('.p-\\[14px\\] .block.mt-3.text-lg');
+                        const fleetPlate = document.querySelector('.p-\\[14px\\] .mt-2.text-\\[\\#b8c8e8\\] strong');
+                        
+                        const detailRoute = document.getElementById('detail-route');
+                        const detailDepart = document.getElementById('detail-depart');
+                        const detailConductor = document.getElementById('detail-conductor');
+
+                        const routeText = trip.route ? trip.route.name : 'Unknown Route';
+                        const departTime = trip.departure_time || 'N/A';
+                        const conductorText = (trip.conductor && trip.conductor.user) ? trip.conductor.user.name : 'Unknown';
+
+                        if(assignmentTitle) assignmentTitle.innerHTML = `Trip • ${routeText}`;
+                        if(departureTime) departureTime.innerText = departTime;
+                        if(conductorName) conductorName.innerText = conductorText;
+                        
+                        if(fleetBus) fleetBus.innerText = trip.bus ? `Bus ${trip.bus.id}` : 'No Bus Assigned';
+                        if(fleetPlate) fleetPlate.innerText = trip.bus ? trip.bus.plate_number : 'N/A';
+
+                        if(detailRoute) detailRoute.innerText = routeText;
+                        if(detailDepart) detailDepart.innerText = `Depart ${departTime}`;
+                        if(detailConductor) detailConductor.innerText = conductorText;
+                    }
+                }
+            } catch(e) {
+                console.error("Error fetching trips:", e);
+            }
+        });
     </script>
 @endsection

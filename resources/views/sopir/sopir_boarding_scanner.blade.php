@@ -70,7 +70,7 @@
         <!-- QR Scanner Area -->
         <div class="mb-6 bg-slate-800/50 p-4 rounded-xl border border-slate-700">
             <div id="reader" class="w-full mx-auto overflow-hidden rounded-lg"></div>
-            <p id="scan-status" class="text-center text-xs text-slate-400 mt-2">Camera initializing...</p>
+            <p id="scan-status" class="text-center text-xs text-slate-400 mt-2">Waiting for camera permission...</p>
         </div>
 
         <div class="flex items-center gap-4 mb-6">
@@ -189,12 +189,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize HTML5 QR Code Scanner
     function onScanSuccess(decodedText, decodedResult) {
-        // Handle on success condition with the decoded message.
         input.value = decodedText;
-        document.getElementById('scan-status').innerText = 'QR Code Scanned!';
-        document.getElementById('scan-status').className = 'text-center text-xs text-emerald-400 mt-2 font-bold';
-        
-        // Auto submit form
+        scanStatus.innerText = 'QR Code Scanned!';
+        scanStatus.className = 'text-center text-xs text-emerald-400 mt-2 font-bold';
+        html5QrCode.stop().catch(() => {});
         form.dispatchEvent(new Event('submit'));
     }
 
@@ -202,23 +200,32 @@ document.addEventListener('DOMContentLoaded', () => {
         // handle scan failure, usually better to ignore and keep scanning.
     }
 
-    let html5QrcodeScanner = new Html5QrcodeScanner(
-        "reader",
-        { fps: 10, qrbox: {width: 250, height: 250} },
-        /* verbose= */ false);
-    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-    
-    // Style adjustments for scanner
-    setTimeout(() => {
-        const readerEl = document.getElementById('reader');
-        if (readerEl) {
-            readerEl.style.border = 'none';
-            const btn = document.getElementById('html5-qrcode-button-camera-permission');
-            if (btn) {
-                btn.className = 'px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-sm mb-2';
-            }
+    const html5QrCode = new Html5Qrcode("reader");
+    const scanStatus = document.getElementById('scan-status');
+
+    Html5Qrcode.getCameras().then(cameras => {
+        if (!cameras || cameras.length === 0) {
+            scanStatus.innerText = 'No camera found.';
+            scanStatus.className = 'text-center text-xs text-red-400 mt-2';
+            return;
         }
-    }, 1000);
+
+        scanStatus.innerText = 'Camera ready. Point at QR code.';
+        scanStatus.className = 'text-center text-xs text-emerald-400 mt-2';
+
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            onScanSuccess,
+            onScanFailure
+        ).catch(err => {
+            scanStatus.innerText = 'Camera error: ' + err;
+            scanStatus.className = 'text-center text-xs text-red-400 mt-2';
+        });
+    }).catch(err => {
+        scanStatus.innerText = 'Camera permission denied or unavailable.';
+        scanStatus.className = 'text-center text-xs text-red-400 mt-2';
+    });
 
 });
 </script>

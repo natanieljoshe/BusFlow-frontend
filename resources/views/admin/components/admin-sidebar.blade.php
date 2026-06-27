@@ -39,15 +39,12 @@
                     <i class="fa-solid fa-users w-5 text-center"></i>
                     <span class="font-medium text-sm">Staff Directory</span>
                 </a>
-            @endif
 
-            <a href="{{ route('admin.routes') }}"
-                class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.routes') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' }}">
-                <i class="fa-solid fa-route w-5 text-center"></i>
-                <span class="font-medium text-sm">Routes</span>
-            </a>
-
-            @if ($userRole !== 'operator')
+                <a href="{{ route('admin.routes') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.routes') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' }}">
+                    <i class="fa-solid fa-route w-5 text-center"></i>
+                    <span class="font-medium text-sm">Routes</span>
+                </a>
                 <a href="{{ route('admin.haltes') }}"
                     class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.haltes') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' }}">
                     <i class="fa-solid fa-map-pin w-5 text-center"></i>
