@@ -135,11 +135,11 @@
                 </div>
                 <div class="bg-slate-900/50 border border-slate-800 rounded-xl p-4 flex items-center gap-3">
                     <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
-                        <i class="fa-solid fa-bus text-emerald-400"></i>
+                        <i class="fa-solid fa-route text-emerald-400"></i>
                     </div>
                     <div>
-                        <p class="text-[10px] text-slate-500">Assigned Bus</p>
-                        <p id="stat-bus" class="text-xl font-bold text-white">--</p>
+                        <p class="text-[10px] text-slate-500">Assigned Route</p>
+                        <p id="stat-route" class="text-xl font-bold text-white">--</p>
                     </div>
                 </div>
                 <div id="stat-license-card" class="hidden bg-slate-900/50 border border-slate-800 rounded-xl p-4 flex items-center gap-3">
@@ -153,11 +153,7 @@
                 </div>
             </div>
 
-            {{-- Assigned Bus Detail --}}
-            <div class="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
-                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Current Bus Assignment</h3>
-                <div id="bus-assignment" class="text-slate-500 text-sm italic">Loading...</div>
-            </div>
+
 
             {{-- Driver-only: License Info --}}
             <div id="license-section" class="hidden bg-slate-900/50 border border-slate-800 rounded-xl p-5">
@@ -197,6 +193,20 @@
                         <div>
                             <label class="block text-xs font-medium text-slate-400 mb-1">Phone</label>
                             <input type="text" id="edit-phone" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Shift Start</label>
+                            <input type="time" id="edit-shift-start" min="05:00" max="23:00" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Shift End</label>
+                            <input type="time" id="edit-shift-end" min="05:00" max="23:00" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Route Assignment</label>
+                            <select id="edit-route-id" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500">
+                                <option value="">-- Select Route --</option>
+                            </select>
                         </div>
                     </div>
                     <div class="flex justify-end gap-3">
@@ -257,6 +267,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const json = await res.json();
         staffData = json.data;
+        
+        // Also load routes for the edit form
+        const routeRes = await fetch(`${API_URL}/api/admin/routes`, { headers });
+        if (routeRes.ok) {
+            const routeJson = await routeRes.json();
+            const routes = Array.isArray(routeJson) ? routeJson : (routeJson.data || []);
+            const routeSel = document.getElementById('edit-route-id');
+            routeSel.innerHTML = '<option value="">-- Select Route --</option>' + 
+                routes.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+        }
+        
         renderProfile(staffData);
     } catch(err) {
         document.getElementById('profile-loading').classList.add('hidden');
@@ -313,7 +334,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Stats
         document.getElementById('stat-trips').textContent = s.trips?.length ?? (s.trips_count ?? 0);
-        document.getElementById('stat-bus').textContent = s.bus?.plate_number || 'None';
+        document.getElementById('stat-route').textContent = s.route?.name || 'None';
 
         // Driver-only license
         if (isDriver && s.license_number) {
@@ -327,32 +348,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('license-expiry').textContent = expiry;
         }
 
-        // Bus Assignment
-        const busDiv = document.getElementById('bus-assignment');
-        if (s.bus) {
-            const busColor = isDriver ? 'indigo' : 'emerald';
-            busDiv.innerHTML = `
-            <div class="flex items-center justify-between bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-${busColor}-500/10 border border-${busColor}-500/30 flex items-center justify-center">
-                        <i class="fa-solid fa-bus text-${busColor}-400 text-xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-white font-bold text-lg">${s.bus.plate_number || 'N/A'}</p>
-                        <p class="text-xs text-slate-400">${s.bus.capacity ? s.bus.capacity + ' seats' : ''} ${s.bus.route ? '· Route: ' + s.bus.route.name : ''}</p>
-                    </div>
-                </div>
-                <a href="/admin/fleet/${s.bus.id}" class="text-xs px-3 py-1.5 border border-${busColor}-700/50 text-${busColor}-400 hover:bg-${busColor}-700/20 rounded-lg transition-colors">
-                    <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> View Bus
-                </a>
-            </div>`;
-        } else {
-            busDiv.innerHTML = `<p class="text-slate-500 italic text-sm">No bus assigned yet.</p>`;
-        }
+
 
         // Prefill edit form
         document.getElementById('edit-employee-id').value = s.employee_id || '';
         document.getElementById('edit-phone').value = s.phone || '';
+        document.getElementById('edit-route-id').value = s.route_id || '';
+        document.getElementById('edit-shift-start').value = s.shift_start ? s.shift_start.substring(0,5) : '';
+        document.getElementById('edit-shift-end').value = s.shift_end ? s.shift_end.substring(0,5) : '';
 
         // Show content
         document.getElementById('profile-loading').classList.add('hidden');
@@ -396,9 +399,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
+        const routeId = document.getElementById('edit-route-id').value;
+        if (!routeId) {
+            alert('Please select a route.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+            return;
+        }
+
+        const shiftStart = document.getElementById('edit-shift-start').value;
+        const shiftEnd = document.getElementById('edit-shift-end').value;
+
+        if (shiftStart && (shiftStart < '05:00' || shiftStart > '23:00')) {
+            alert('Shift Start must be between 05:00 and 23:00.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+            return;
+        }
+
+        if (shiftEnd && (shiftEnd < '05:00' || shiftEnd > '23:00')) {
+            alert('Shift End must be between 05:00 and 23:00.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+            return;
+        }
+
         const body = {
             employee_id: document.getElementById('edit-employee-id').value.trim(),
             phone: document.getElementById('edit-phone').value.trim(),
+            route_id: routeId ? parseInt(routeId) : null,
+            shift_start: shiftStart || null,
+            shift_end: shiftEnd || null
         };
 
         const endpoint = staffType === 'driver'
@@ -412,10 +443,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         if (res.ok) {
-            const json = await res.json();
-            staffData = { ...staffData, ...body };
-            renderProfile(staffData);
-            toggleEdit();
+            location.reload();
         } else {
             const err = await res.json();
             alert('Error: ' + (err.message || JSON.stringify(err.errors || err)));

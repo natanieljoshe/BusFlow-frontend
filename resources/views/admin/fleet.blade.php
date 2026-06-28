@@ -93,18 +93,6 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Driver</label>
-                    <select id="bus-driver" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
-                        <option value="">-- Select Driver --</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Conductor</label>
-                    <select id="bus-conductor" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
-                        <option value="">-- Select Conductor --</option>
-                    </select>
-                </div>
-                <div>
                     <label class="block text-xs font-medium text-slate-400 mb-1">Route</label>
                     <select id="bus-route" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
                         <option value="">-- Unassigned --</option>
@@ -204,7 +192,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             </div>
                             <div>
                                 <h4 class="text-white font-bold tracking-wide">${plate}</h4>
-                                <span class="text-[10px] text-slate-400 font-mono">Capacity: ${capacity} | Drivers: ${bus.drivers && bus.drivers.length ? bus.drivers.map(d => d.user ? d.user.name : 'Unknown').join(', ') : 'Unassigned'} | Conds: ${bus.conductors && bus.conductors.length ? bus.conductors.map(c => c.user ? c.user.name : 'Unknown').join(', ') : 'Unassigned'} | Route: ${bus.route ? bus.route.name : 'Unassigned'}</span>
+                                <span class="text-[10px] text-slate-400 font-mono">Capacity: ${capacity} | Route: ${bus.route ? bus.route.name : 'Unassigned'}</span>
                             </div>
                         </div>
                         <span class="px-2 py-0.5 rounded text-[10px] font-bold ${statusBadge} border flex items-center gap-1.5">
@@ -233,8 +221,6 @@ window.openBusModal = function() {
     document.getElementById('bus-plate').value = '';
     document.getElementById('bus-capacity').value = '40';
     document.getElementById('bus-status').value = '1';
-    Array.from(document.getElementById('bus-driver').options).forEach(opt => opt.selected = false);
-    Array.from(document.getElementById('bus-conductor').options).forEach(opt => opt.selected = false);
     document.getElementById('bus-route').value = '';
     const modal = document.getElementById('bus-modal');
     modal.classList.remove('hidden');
@@ -251,20 +237,13 @@ window.closeBusModal = function() {
     }, 200);
 };
 
-window.editBus = function(id, plate, capacity, status, driverIds, conductorIds, routeId) {
+window.editBus = function(id, plate, capacity, status, routeId) {
     document.getElementById('modal-title').innerText = 'Edit Bus';
     document.getElementById('bus-id').value = id;
     document.getElementById('bus-plate').value = plate;
     document.getElementById('bus-capacity').value = capacity;
     document.getElementById('bus-status').value = status;
     
-    Array.from(document.getElementById('bus-driver').options).forEach(opt => {
-        opt.selected = driverIds.includes(parseInt(opt.value));
-    });
-    Array.from(document.getElementById('bus-conductor').options).forEach(opt => {
-        opt.selected = conductorIds.includes(parseInt(opt.value));
-    });
-
     document.getElementById('bus-route').value = routeId || '';
     const modal = document.getElementById('bus-modal');
     modal.classList.remove('hidden');
@@ -296,8 +275,6 @@ document.getElementById('bus-form').addEventListener('submit', async (e) => {
     const capacity = document.getElementById('bus-capacity').value;
     const status = document.getElementById('bus-status').value;
     
-    const driverIds = Array.from(document.getElementById('bus-driver').selectedOptions).map(opt => opt.value);
-    const conductorIds = Array.from(document.getElementById('bus-conductor').selectedOptions).map(opt => opt.value);
     const routeId = document.getElementById('bus-route').value;
 
     const method = id ? 'PUT' : 'POST';
@@ -318,8 +295,6 @@ document.getElementById('bus-form').addEventListener('submit', async (e) => {
                 plate_number: plate, 
                 capacity: capacity, 
                 status: status, 
-                driver_ids: driverIds, 
-                conductor_ids: conductorIds, 
                 route_id: routeId || null 
             })
         });
@@ -342,32 +317,13 @@ document.getElementById('bus-form').addEventListener('submit', async (e) => {
 window.loadSelectOptions = async function() {
     try {
         const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
-        const [driversRes, condsRes, routesRes] = await Promise.all([
-            fetch(`${API_URL}/api/admin/drivers`, { headers }),
-            fetch(`${API_URL}/api/admin/conductors`, { headers }),
-            fetch(`${API_URL}/api/admin/routes`, { headers })
-        ]);
-        if(driversRes.ok && routesRes.ok && condsRes.ok) {
-            const driversData = await driversRes.json();
-            const condsData = await condsRes.json();
+        const routesRes = await fetch(`${API_URL}/api/admin/routes`, { headers });
+        if(routesRes.ok) {
             const routesData = await routesRes.json();
-            
-            const drivers = Array.isArray(driversData) ? driversData : (driversData.data || []);
-            const conds = Array.isArray(condsData) ? condsData : (condsData.data || []);
             const routes = Array.isArray(routesData) ? routesData : (routesData.data || []);
             
-            const driverSelect = document.getElementById('bus-driver');
-            const condSelect = document.getElementById('bus-conductor');
             const routeSelect = document.getElementById('bus-route');
             
-            drivers.forEach(d => {
-                const driverName = d.user ? d.user.name : (d.employee_id || 'Unknown');
-                driverSelect.innerHTML += `<option value="${d.id}">${driverName}</option>`;
-            });
-            conds.forEach(c => {
-                const condName = c.user ? c.user.name : (c.employee_id || 'Unknown');
-                condSelect.innerHTML += `<option value="${c.id}">${condName}</option>`;
-            });
             routes.forEach(r => {
                 routeSelect.innerHTML += `<option value="${r.id}">${r.name}</option>`;
             });

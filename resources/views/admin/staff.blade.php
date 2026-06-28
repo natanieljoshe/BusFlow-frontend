@@ -61,6 +61,12 @@
                     <input type="text" id="staff-employee-id" placeholder="e.g. DRV-001" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
                 </div>
                 <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Route</label>
+                    <select id="staff-route-id" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                        <option value="">-- Select Route --</option>
+                    </select>
+                </div>
+                <div>
                     <label class="block text-xs font-medium text-slate-400 mb-1">Phone (optional)</label>
                     <input type="text" id="staff-phone" placeholder="e.g. 08123456789" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
                 </div>
@@ -95,19 +101,27 @@ window.openAddStaffModal = async function() {
     modal.classList.add('flex');
     setTimeout(() => document.getElementById('add-staff-modal-content').classList.remove('scale-95'), 10);
 
-    // Load available users (not yet staff)
+    // Load available users (not yet staff) and routes
     const API_URL = '{{ rtrim(env('API_URL', 'http://127.0.0.1:8010/api'), '/api') }}';
     const token = localStorage.getItem('token');
     const userSel = document.getElementById('staff-user-id');
+    const routeSel = document.getElementById('staff-route-id');
     userSel.innerHTML = '<option value="">Loading...</option>';
     try {
-        const res = await fetch(`${API_URL}/api/admin/users`, {
-            headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
-        allUsers = Array.isArray(data) ? data : (data.data || []);
+        const [userRes, routeRes] = await Promise.all([
+            fetch(`${API_URL}/api/admin/users`, { headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` } }),
+            fetch(`${API_URL}/api/admin/routes`, { headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` } })
+        ]);
+        
+        const userData = await userRes.json();
+        allUsers = Array.isArray(userData) ? userData : (userData.data || []);
         userSel.innerHTML = '<option value="">-- Select User --</option>' +
             allUsers.map(u => `<option value="${u.id}">${u.name} (${u.email})</option>`).join('');
+            
+        const routeData = await routeRes.json();
+        const routes = Array.isArray(routeData) ? routeData : (routeData.data || []);
+        routeSel.innerHTML = '<option value="">-- Select Route --</option>' +
+            routes.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
     } catch(e) {
         userSel.innerHTML = '<option value="">Failed to load users</option>';
     }
@@ -129,11 +143,13 @@ document.getElementById('add-staff-form').addEventListener('submit', async funct
     const roleType = document.getElementById('staff-role-type').value;
     const userId = document.getElementById('staff-user-id').value;
     const employeeId = document.getElementById('staff-employee-id').value.trim();
+    const routeId = document.getElementById('staff-route-id').value;
     const phone = document.getElementById('staff-phone').value.trim();
     const btn = document.getElementById('save-staff-btn');
 
     if (!userId) { alert('Please select a user.'); return; }
     if (!employeeId) { alert('Please enter an Employee ID.'); return; }
+    if (!routeId) { alert('Please select a route.'); return; }
 
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
@@ -141,6 +157,7 @@ document.getElementById('add-staff-form').addEventListener('submit', async funct
     const endpoint = roleType === 'driver' ? '/api/admin/drivers' : '/api/admin/conductors';
     const body = { user_id: parseInt(userId), employee_id: employeeId };
     if (phone) body.phone = phone;
+    if (routeId) body.route_id = parseInt(routeId);
 
     try {
         const res = await fetch(`${API_URL}${endpoint}`, {
@@ -232,7 +249,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const name = staff.name || staff.user?.name || 'Unknown';
             const staffId = staff.employee_id || staff.id || 'N/A';
             const avatarUrl = staff.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1e293b&color=94a3b8`;
-            const assignment = staff.current_route || staff.bus_id || 'None';
+            const assignment = staff.route ? staff.route.name : 'Unassigned';
 
             grid.innerHTML += `
             <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl p-6 relative overflow-hidden group hover:border-${roleColor}-500/40 transition-colors shadow-lg ${!isAvailable ? 'opacity-70' : ''}">
