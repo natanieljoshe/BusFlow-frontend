@@ -44,7 +44,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         $payload = [];
         
         if ($jobId) {
-            $path = base_path('../bus_flow_backend/BusFlow-backend/storage/app/optimizations/' . $jobId . '.json');
+            $path = base_path('../BusFlow-backend/storage/app/optimizations/' . $jobId . '.json');
             if (file_exists($path)) {
                 $statusData = json_decode(file_get_contents($path), true);
                 if (isset($statusData['result'])) {
@@ -55,7 +55,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         
         // Fallback for direct visits
         if (empty($payload)) {
-            $fallbackPath = base_path('../bus_flow_backend/BusFlow-backend/app/Algorithms/src/payload.JSON');
+            $fallbackPath = base_path('../BusFlow-backend/app/Algorithms/src/payload.JSON');
             if (file_exists($fallbackPath)) {
                 $payload = json_decode(file_get_contents($fallbackPath), true);
             }
