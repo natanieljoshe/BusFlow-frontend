@@ -27,9 +27,25 @@
 @php
     $routeParam = request('route', 'M15+');
     $dateParam = request('date', '2024-07-15');
+    
+    if (isset($payload['schedule_data']['route'])) {
+        $routeParam = $payload['schedule_data']['route'];
+    } elseif (isset($payload['route_stops']) && collect($payload['route_stops'])->count() > 0) {
+        $routeParam = $payload['route_stops'][0]['route_id'];
+    }
+    
     if (isset($payload['schedule_data']['date'])) {
         $dateParam = $payload['schedule_data']['date'];
     }
+
+    $routeName = $routeParam;
+    if (isset($payload['routes']) && count($payload['routes']) > 0) {
+        $r = $payload['routes'][0];
+        $code = $r['code'] ?? $r['id'] ?? $routeParam;
+        $name = $r['name'] ?? '';
+        $routeName = $name ? "{$code} - {$name}" : $code;
+    }
+
     $dateStr = \Carbon\Carbon::parse($dateParam)->isoFormat('dddd, D MMMM Y');
     
     // Find stops for map based on payload.JSON
@@ -51,9 +67,13 @@
 <div class="space-y-8 max-w-7xl mx-auto pb-12">
     <!-- Header -->
     <div class="glass-card p-6 border-l-4 border-l-indigo-500 flex justify-between items-center">
-        <div>
-            <h1 class="text-2xl font-bold text-white mb-1">HASIL OPTIMASI JADWAL BUS — {{ $routeParam }}</h1>
-            <p class="text-slate-400"><i class="fa-regular fa-calendar mr-2"></i> {{ $dateStr }}</p>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-microchip text-indigo-400"></i> Hasil Optimasi Jadwal Bus <span class="text-indigo-400">{{ $routeName }}</span>
+                </h1>
+                <p class="text-slate-400"><i class="fa-regular fa-calendar mr-2"></i> {{ $dateStr }}</p>
+            </div>
         </div>
         <a href="{{ route('admin.ga-optimizer') }}" class="text-indigo-400 hover:text-indigo-300 transition-colors text-sm font-medium flex items-center gap-2 bg-indigo-500/10 px-4 py-2 rounded-lg">
             <i class="fa-solid fa-arrow-left"></i> Kembali Edit
@@ -139,9 +159,11 @@
                             <p class="text-xs text-slate-400">Slot keberangkatan berdasarkan optimasi AI</p>
                         </div>
                     </div>
+                    @if(request('mode') !== 'demo')
                     <button id="btn-apply-schedule" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg transition-colors flex items-center gap-2">
                         <i class="fa-solid fa-check-double"></i> Apply New Schedule
                     </button>
+                    @endif
                 </div>
                 
                 <div class="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">

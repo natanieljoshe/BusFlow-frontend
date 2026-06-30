@@ -146,6 +146,35 @@
             <p>Loading haltes...</p>
         </div>
     </div>
+
+    <!-- Route Schedules List -->
+    <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 p-6 border border-sky-500/10">
+        <div class="absolute -top-10 -left-10 w-40 h-40 bg-sky-500 rounded-full mix-blend-screen filter blur-3xl opacity-20"></div>
+        <div class="flex items-center justify-between z-10 relative mb-4">
+            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                <i class="fa-solid fa-clock text-sky-400"></i> Scheduled Trips
+            </h3>
+            <a href="{{ route('admin.ga-optimizer') }}" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold rounded-lg shadow-lg transition-colors flex items-center gap-2">
+                <i class="fa-solid fa-microchip"></i> AI Optimizer
+            </a>
+        </div>
+        <div class="overflow-x-auto relative z-10">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-slate-400 text-xs uppercase border-b border-slate-800">
+                        <th class="py-3 px-4 font-semibold">Berangkat</th>
+                        <th class="py-3 px-4 font-semibold">Tiba (Est)</th>
+                        <th class="py-3 px-4 font-semibold">Bus</th>
+                        <th class="py-3 px-4 font-semibold">Supir</th>
+                        <th class="py-3 px-4 font-semibold">Kondektur</th>
+                    </tr>
+                </thead>
+                <tbody id="route-schedules-list" class="divide-y divide-slate-800/50">
+                    <tr><td colspan="5" class="py-6 text-center text-slate-500">Loading schedules...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 @push('scripts')
@@ -485,10 +514,46 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // ─── Load Schedules ────────────────────────────────────────────────────
+    window.loadRouteSchedules = async function() {
+        try {
+            const res = await fetch(`${API_URL}/api/admin/trips?route_id=${routeId}`, { headers });
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            const trips = Array.isArray(data) ? data : (data.data || []);
+            const tbody = document.getElementById('route-schedules-list');
+            
+            if (trips.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-500">Belum ada jadwal keberangkatan untuk rute ini.</td></tr>`;
+                return;
+            }
+
+            // Sort trips by departure time
+            trips.sort((a, b) => a.departure_time.localeCompare(b.departure_time));
+
+            tbody.innerHTML = trips.map(t => {
+                const busStr = t.bus ? `${t.bus.plate_number} (Cap: ${t.bus.capacity})` : '<span class="text-red-400 italic">Unassigned</span>';
+                const driverStr = t.driver ? `${t.driver.employee_id}` : '<span class="text-red-400 italic">Unassigned</span>';
+                const condStr = t.conductor ? `${t.conductor.employee_id}` : '<span class="text-red-400 italic">Unassigned</span>';
+                return `
+                <tr class="hover:bg-slate-800/30 transition-colors text-sm text-slate-300">
+                    <td class="py-3 px-4 font-mono text-emerald-400">${t.departure_time.substring(0, 5)}</td>
+                    <td class="py-3 px-4 font-mono text-slate-400">${t.estimated_arrival ? t.estimated_arrival.substring(0, 5) : '-'}</td>
+                    <td class="py-3 px-4">${busStr}</td>
+                    <td class="py-3 px-4">${driverStr}</td>
+                    <td class="py-3 px-4">${condStr}</td>
+                </tr>`;
+            }).join('');
+        } catch (e) {
+            document.getElementById('route-schedules-list').innerHTML = `<tr><td colspan="5" class="py-6 text-center text-red-400">Gagal memuat jadwal.</td></tr>`;
+        }
+    };
+
     // ─── Init ──────────────────────────────────────────────────────────────
     loadRouteDetail();
     loadAllHaltes();
     loadAssignedBuses();
+    loadRouteSchedules();
 });
 </script>
 @endpush
