@@ -25,7 +25,7 @@ Route::get('/register', function () {
 Route::post('/local-register', [AuthController::class, 'register'])->name('local.register');
 
 // Admin Routes
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware('role:admin,operator')->group(function () {
     Route::get('/dashboard', function () { return view('admin.dashboard'); })->name('dashboard');
     Route::get('/fleet', function () { return view('admin.fleet'); })->name('fleet');
     Route::get('/fleet/{id}', function ($id) { return view('admin.fleet-detail', compact('id')); })->name('fleet.detail');
@@ -67,7 +67,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 Route::redirect('/user', '/user/routes')->name('user.home');
 
-Route::prefix('user')->name('user.')->group(function () {
+Route::prefix('user')->name('user.')->middleware('role:passenger')->group(function () {
     Route::get('/routes', [UserDashboardController::class, 'routes'])->name('routes');
     Route::get('/routes/details/{id?}', [UserDashboardController::class, 'routeDetails'])->name('routes.details');
     Route::get('/busstop/{uid?}', [UserDashboardController::class, 'busstop'])->name('busstop');
@@ -76,7 +76,7 @@ Route::prefix('user')->name('user.')->group(function () {
     Route::get('/my-wallet', [UserDashboardController::class, 'myWallet'])->name('my-wallet');
 });
 
-Route::prefix('sopir')->name('sopir.')->group(function () {
+Route::prefix('sopir')->name('sopir.')->middleware('role:driver,conductor')->group(function () {
     Route::view('/home', 'sopir.sopir_home')->name('home');
     Route::view('/trip-details', 'sopir.sopir_trip_details')->name('trip-details');
     Route::view('/history', 'sopir.sopir_history')->name('history');
